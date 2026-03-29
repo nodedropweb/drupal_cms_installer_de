@@ -21,7 +21,7 @@ Dieses Paket greift in die Erstinsalltion im Webbrowser ein, sobald "Deutsch" al
 Nutze das mitgelieferte Bash-Script, um ein Drupal CMS direkt von Drupal org herunterzuladen und den Patch aus dieser Repo anzuwenden, damit der Installer im Webbrowser komplett lokaliasiert wird.
 
 ```bash
-curl -sSL [https://raw.githubusercontent.com/nodedropweb/drupal_cms_installer_de/master/installer_de_patch.sh](https://raw.githubusercontent.com/nodedropweb/drupal_cms_installer_de/master/installer_de_patch.sh) | bash
+curl -sSL https://raw.githubusercontent.com/nodedropweb/drupal_cms_installer_de/master/installer_de_patch.sh | bash
 ```
 ---
 
@@ -39,7 +39,7 @@ The default Drupal CMS installer is currently hardcoded for English. This packag
 Verwenden Sie das mitgelieferte Bash-Skript, um ein Drupal-CMS direkt von Drupal.org herunterzuladen und den Patch aus diesem Repository anzuwenden, damit der Installationsvorgang vollständig im Webbrowser durchgeführt werden kann.
 
 ```bash
-curl -sSL [https://raw.githubusercontent.com/nodedropweb/drupal_cms_installer_de/master/installer_de_patch.sh](https://raw.githubusercontent.com/nodedropweb/drupal_cms_installer_de/master/installer_de_patch.sh) | bash
+curl -sSL https://raw.githubusercontent.com/nodedropweb/drupal_cms_installer_de/master/installer_de_patch.sh | bash
 ```
 
 ## 🛠 Technische Details / Technical Details
