@@ -1,0 +1,20 @@
+{
+    "name": "drupal/drupal_cms_installer_de",
+    "type": "drupal-profile",
+    "description": "Deutsche Anpassung für den Drupal CMS Installer.",
+    "license": [
+        "GPL-2.0-or-later"
+    ],
+    "version": "2.1.0",
+    "scripts": {
+        "replace-installer-theme": [
+            "@php scripts/theme-fix.php"
+        ],
+        "post-install-cmd": [
+            "@replace-installer-theme"
+        ],
+        "post-update-cmd": [
+            "@replace-installer-theme"
+        ]
+    }
+}

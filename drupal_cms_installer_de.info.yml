@@ -1,0 +1,10 @@
+name: Drupal CMS Installer DE
+type: theme
+core_version_requirement: '^11.1'
+description: 'Ergänzt das Drupal CMS Installer Theme um deutsche Übersetzungen via JavaScript.'
+base theme: drupal_cms_installer_theme
+libraries-extend:
+  drupal_cms_installer_theme/maintenance-page:
+    - drupal_cms_installer_de/installer-translations
+  drupal_cms_installer_theme/drupal.progress:
+    - drupal_cms_installer_de/progress-override

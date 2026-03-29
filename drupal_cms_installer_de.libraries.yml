@@ -1,0 +1,12 @@
+installer-translations:
+  js:
+    js/installer-translations.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+progress-override:
+  js:
+    js/progress-override.js: {}
+  dependencies:
+    - core/drupal
