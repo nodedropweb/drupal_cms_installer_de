@@ -18,6 +18,7 @@
       'Created by Dripyard': 'Erstellt von Dripyard',
       'Created by Kanopi Studios': 'Erstellt von Kanopi Studios',
       'Created by QED42': 'Erstellt von QED42',
+      'License key': 'Lizenztschlüssel',
       'Created by Annertech': 'Erstellt von Annertech',
       'Created by Promet Source': 'Erstellt von Promet Source',
       'Created by OpenSense Labs': 'Erstellt von OpenSense Labs',
