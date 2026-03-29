@@ -9,7 +9,7 @@ echo -e "${BLUE}🚀 Starte Installation von Drupal CMS (Deutsche Version)...${N
 
 # 1. Drupal CMS via Composer Projekt-Template laden
 # Wir installieren es in den Ordner 'my-drupal-cms'
-composer create-project drupal/cms-recipe-project:dev-main cms --no-install
+composer create-project drupal/cms
 cd cms
 
 # 2. Dein lokales/externes Theme-Repository hinzufügen
