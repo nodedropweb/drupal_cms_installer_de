@@ -9,7 +9,8 @@ This repository provides a specialized theme extension for the **Drupal CMS Inst
 ## 🇩🇪 Deutsch
 
 ### Was macht dieses Paket?
-Der Standard-Installer von Drupal CMS ist aktuell auf Englisch festgeschrieben. Dieses Paket greift ein, sobald "Deutsch" als Installationssprache gewählt wird:
+Der Standard-Installer von Drupal CMS ist aktuell auf Englisch festgeschrieben. 
+Dieses Paket greift in die Erstinsalltion im Webbrowser ein, sobald "Deutsch" als Installationssprache gewählt wird:
 
 * **Automatisches Theme-Patching**: Ein PHP-Script (`scripts/theme-fix.php`) passt die Konfiguration des Original-Installers (`drupal_cms_installer.info.yml`) automatisch an, um dieses Theme als Standard zu setzen.
 * **UI-Übersetzungen**: Über `js/installer-translations.js` werden englische Texte wie "Choose a site template" direkt im Browser durch deutsche Entsprechungen ersetzt.
@@ -17,7 +18,7 @@ Der Standard-Installer von Drupal CMS ist aktuell auf Englisch festgeschrieben. 
 * **Nahtlose Integration**: Das Paket nutzt Composer-Scripts (`post-install-cmd`), um die Änderungen bei jeder Installation oder Aktualisierung sicherzustellen.
 
 ### Schnelle Installation
-Nutze das mitgelieferte Bash-Script, um ein neues Drupal CMS Projekt direkt mit dieser deutschen Anpassung aufzusetzen:
+Nutze das mitgelieferte Bash-Script, um ein Drupal CMS direkt von Drupal org herunterzuladen und den Patch aus dieser Repo anzuwenden, damit der Installer im Webbrowser komplett lokaliasiert wird.
 
 ```bash
 curl -sSL [https://raw.githubusercontent.com/nodedropweb/drupal_cms_installer_de/master/installer_de_patch.sh](https://raw.githubusercontent.com/nodedropweb/drupal_cms_installer_de/master/installer_de_patch.sh) | bash
@@ -35,7 +36,7 @@ The default Drupal CMS installer is currently hardcoded for English. This packag
 * **Seamless Integration**: The package utilizes Composer scripts (`post-install-cmd`) to ensure changes are applied during every install or update.
 
 ### Quick Installation
-Use the included Bash script to set up a new Drupal CMS project directly with this German localization:
+Verwenden Sie das mitgelieferte Bash-Skript, um ein Drupal-CMS direkt von Drupal.org herunterzuladen und den Patch aus diesem Repository anzuwenden, damit der Installationsvorgang vollständig im Webbrowser durchgeführt werden kann.
 
 ```bash
 curl -sSL [https://raw.githubusercontent.com/nodedropweb/drupal_cms_installer_de/master/installer_de_patch.sh](https://raw.githubusercontent.com/nodedropweb/drupal_cms_installer_de/master/installer_de_patch.sh) | bash
