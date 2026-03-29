@@ -1,4 +1,4 @@
-# 🇩🇪 Drupal CMS Installer - Deutsche Anpassung / German Localization
+# Drupal CMS Installer - Deutsche Anpassung / German Localization
 
 Dieses Repository bietet eine spezialisierte Theme-Erweiterung für den **Drupal CMS Installer** (Starshot), um die Installationsroutine vollständig auf Deutsch zu lokalisieren.
 
@@ -21,6 +21,7 @@ Nutze das mitgelieferte Bash-Script, um ein neues Drupal CMS Projekt direkt mit 
 
 ```bash
 curl -sSL [https://raw.githubusercontent.com/nodedropweb/drupal_cms_installer_de/master/installer_de_patch.sh](https://raw.githubusercontent.com/nodedropweb/drupal_cms_installer_de/master/installer_de_patch.sh) | bash
+```
 ---
 
 ## 🇺🇸 English
@@ -38,7 +39,7 @@ Use the included Bash script to set up a new Drupal CMS project directly with th
 
 ```bash
 curl -sSL [https://raw.githubusercontent.com/nodedropweb/drupal_cms_installer_de/master/installer_de_patch.sh](https://raw.githubusercontent.com/nodedropweb/drupal_cms_installer_de/master/installer_de_patch.sh) | bash
----
+```
 
 ## 🛠 Technische Details / Technical Details
 
