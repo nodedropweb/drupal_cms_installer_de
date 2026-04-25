@@ -6,5 +6,6 @@ base theme: drupal_cms_installer_theme
 libraries-extend:
   drupal_cms_installer_theme/maintenance-page:
     - drupal_cms_installer_de/installer-translations
+    - drupal_cms_installer_de/dark-mode
   drupal_cms_installer_theme/drupal.progress:
     - drupal_cms_installer_de/progress-override

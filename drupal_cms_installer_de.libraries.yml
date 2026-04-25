@@ -10,3 +10,8 @@ progress-override:
     js/progress-override.js: {}
   dependencies:
     - core/drupal
+
+dark-mode:
+  css:
+    theme:
+      css/dark-mode.css: {}

@@ -1,0 +1,133 @@
+/**
+ * @file
+ * Dark mode support for the Drupal CMS Installer DE theme.
+ * This file implements system-based dark mode switching using prefers-color-scheme.
+ */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --gin-color-title: #fff;
+    --gin-color-text: #d2d3d3;
+    --gin-color-text-light: #9e9fa0;
+    --gin-shadow-button: rgba(0, 0, 0, .9);
+    --gin-color-button-text: #111;
+    --gin-color-focus: rgb(81, 168, 255);
+    --gin-color-focus-border: rgba(0, 0, 0, .8);
+    --gin-color-focus-neutral-rgb: rgba(255, 255, 255, .8);
+    --gin-color-disabled: #646464;
+    --gin-color-disabled-border: #646464;
+    --gin-color-disabled-bg: #47474c;
+    --gin-color-warning: #dec15f;
+    --gin-bg-warning-light: rgba(222, 193, 95, .1);
+    --gin-color-danger: #ce6060;
+    --gin-color-danger-lightest: #483439;
+    --gin-color-green: #32cea4;
+    --gin-color-info: #559bca;
+    --gin-bg-input: var(--gin-bg-layer2);
+    --gin-bg-app: #1b1b1d;
+    --gin-bg-layer: #2a2a2d;
+    --gin-bg-layer2: #3b3b3f;
+    --gin-bg-layer3: #47474c;
+    --gin-bg-layer4: #19191b;
+    --gin-bg-secondary: var(--gin-bg-app);
+    --gin-bg-unpublished: var(--gin-bg-warning-light);
+    --gin-color-contextual: var(--gin-bg-layer3);
+    --gin-border-color: #43454a;
+    --gin-border-color-secondary: rgba(255, 255, 255, .075);
+    --gin-border-color-layer: rgba(0, 0, 0, .05);
+    --gin-border-color-layer2: #76777b;
+    --gin-border-color-table: #43454a;
+    --gin-border-color-table-header: rgba(255, 255, 255, .12);
+    --gin-border-color-form-element: var(--gin-border-color-layer2);
+    --gin-bg-header: #1b1b1d;
+    --gin-switch: var(--gin-color-primary);
+    --gin-status-text: var(--gin-color-text-light);
+    --gin-status-bg: rgba(255, 255, 255, .1);
+    --gin-status-success-text: #39b77b;
+    --gin-status-success-bg: #26a76930;
+    --gin-status-warning-text: #e8d185;
+    --gin-status-warning-bg: rgba(226, 151, 0, .15);
+    --gin-status-danger-text: #e69e9e;
+    --gin-status-danger-bg: rgba(222, 117, 96, .15);
+    --gin-shadow-l1: 0 1px 2px rgb(0 0 0 / 2%), 0 3px 4px rgb(0 0 0 / 3%), 0 5px 8px rgb(0 0 0 / 4%);
+    --gin-shadow-l2: 0 1px 2px rgb(0 0 0 / 2%), 0 3px 4px rgb(0 0 0 / 3%), 0 5px 8px rgb(0 0 0 / 4%), 0 20px 24px rgb(0 0 0 / 12%);
+    --gin-icon-color: #888;
+    --gin-pattern-fallback: var(--gin-bg-layer2);
+    --gin-pattern: var(--gin-border-color);
+    --gin-tooltip-bg: var(--gin-bg-layer3);
+  }
+
+  body.install-page {
+    background-color: var(--gin-bg-app);
+    border-inline-start-color: var(--gin-bg-layer2);
+    color: var(--gin-color-text);
+  }
+
+  .cms-installer {
+    color: var(--gin-color-text);
+  }
+
+  .cms-installer__main-heading {
+    color: var(--gin-color-title);
+  }
+
+  .cms-installer__step {
+    color: var(--gin-color-text-light);
+  }
+
+  /* Form elements */
+  .form-element {
+    background-color: var(--gin-bg-input);
+    color: var(--gin-color-text);
+    border-color: var(--gin-border-color-form-element);
+  }
+
+  .form-element:focus {
+    border-color: var(--gin-color-focus);
+    box-shadow: 0 0 0 2px var(--gin-color-focus-border);
+  }
+
+  /* Progress bar */
+  .cms-installer .progress__track {
+    background-color: var(--gin-bg-layer3);
+  }
+
+  /* Add-ons / Site templates */
+  #edit-add-ons label img {
+    border-color: var(--gin-border-color);
+  }
+
+  #edit-add-ons label {
+    color: var(--gin-color-text);
+  }
+
+  #edit-add-ons label:hover {
+    background-color: var(--gin-bg-layer);
+  }
+
+  /* Buttons */
+  .button--primary {
+    --gin-color-button-text: #fff;
+  }
+
+  /* Typography */
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--gin-color-title);
+  }
+
+  p, .description {
+    color: var(--gin-color-text-light);
+  }
+
+  /* Language switcher */
+  select.cms-installer__language-switcher {
+    color: var(--gin-color-text);
+    background-color: var(--gin-bg-app);
+  }
+
+  select.cms-installer__language-switcher option {
+    background-color: var(--gin-bg-layer2);
+    color: var(--gin-color-text);
+  }
+}
