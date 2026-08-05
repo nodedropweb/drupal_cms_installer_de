@@ -39,6 +39,14 @@
       'Designed for non-profit organizations, community groups, and social initiatives that need a clear and effective online presence.': 'Entwickelt für gemeinnützige Organisationen, Gemeinschaftsgruppen und soziale Initiativen, die eine klare und effektive Online-Präsenz benötigen.',
       'Frei': 'Kostenlos',
       'Buy for $899': 'Für $899 kaufen',
+      'Created by Event Organizers Working Group': 'Erstellt von Event Organizers Working Group',
+      'Created by drunomics': 'Erstellt von drunomics',
+      'Designed for a portfolio site, this template features a sharp and striking black-and-white design, along with articles and a project portfolio.': 'Entwickelt für eine Portfolio-Website, bietet diese Vorlage ein scharfes und auffälliges Schwarz-Weiß-Design sowie Artikel und ein Projektportfolio.',
+      'Designed for a portfolio site, this template features a warm and modern earthy design, along with articles and a project portfolio.': 'Entwickelt für eine Portfolio-Website, bietet diese Vorlage ein warmes und modernes, erdiges Design sowie Artikel und ein Projektportfolio.',
+      'Built with the Mercury theme, this template showcases Mercury and documents the theme\'s features and components.': 'Erstellt mit dem Mercury-Theme, präsentiert diese Vorlage Mercury und dokumentiert die Funktionen und Komponenten des Themes.',
+      'Designed for a conference or similar event that collects, moderates, and schedules user-submitted sessions. Features sections for events, sessions, articles (news), and sponsorships. Supports BOFs, jobs listings, personal schedules, webforms, and pages.': 'Entwickelt für eine Konferenz oder ähnliche Veranstaltung, die von Nutzern eingereichte Sessions sammelt, moderiert und terminiert. Bietet Bereiche für Veranstaltungen, Sessions, Artikel (News) und Sponsoring. Unterstützt BOFs, Stellenanzeigen, persönliche Zeitpläne, Webformulare und Seiten.',
+      'A simple Nuxt frontend starter with Tailwind CSS that uses decoupled rendering via Lupus Decoupled.': 'Ein einfacher Nuxt-Frontend-Starter mit Tailwind CSS, der entkoppeltes Rendering über Lupus Decoupled nutzt.',
+      'Nuxt repo': 'Nuxt-Repository',
     },
   };
 
