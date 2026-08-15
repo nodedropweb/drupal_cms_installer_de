@@ -1,0 +1,7 @@
+name: 'I18N Extras (DE)'
+description: 'Aktiviert pb_localizer, yoast_seo_i18n und default_content_locale für mehrsprachige Drupal-CMS-Installationen.'
+type: 'Drupal CMS'
+install:
+  - pb_localizer
+  - yoast_seo_i18n
+  - default_content_locale

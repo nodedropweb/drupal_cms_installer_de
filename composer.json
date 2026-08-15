@@ -10,11 +10,16 @@
         "replace-installer-theme": [
             "@php scripts/theme-fix.php"
         ],
+        "apply-i18n-extras": [
+            "@php scripts/i18n-extras-fix.php"
+        ],
         "post-install-cmd": [
-            "@replace-installer-theme"
+            "@replace-installer-theme",
+            "@apply-i18n-extras"
         ],
         "post-update-cmd": [
-            "@replace-installer-theme"
+            "@replace-installer-theme",
+            "@apply-i18n-extras"
         ]
     }
 }

@@ -38,8 +38,8 @@ apply_installer_de() {
     # Wir rufen es direkt über PHP auf, falls die Composer-Verknüpfung im Vendor noch nicht sitzt
     php web/profiles/contrib/drupal_cms_installer_de/scripts/theme-fix.php
 
-    echo -e "${BLUE}ℹ️  Hinweis: Die Zusatzmodule liegen jetzt im Code, sind aber noch nicht aktiviert.${NC}"
-    echo -e "${BLUE}   Aktivieren mit: drush pm:enable -y pb_localizer yoast_seo_i18n default_content_locale${NC}"
+    echo -e "${BLUE}🧬 Bindet i18n_extras-Rezept in die Site-Template-Auswahl ein...${NC}"
+    php web/profiles/contrib/drupal_cms_installer_de/scripts/i18n-extras-fix.php
 }
 
 echo -e "${BLUE}🚀 Drupal CMS Installer – deutsches Theme${NC}"
