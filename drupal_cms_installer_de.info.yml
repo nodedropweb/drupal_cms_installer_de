@@ -7,5 +7,8 @@ libraries-extend:
   drupal_cms_installer_theme/maintenance-page:
     - drupal_cms_installer_de/installer-translations
     - drupal_cms_installer_de/dark-mode
+    - drupal_cms_installer_de/typography
+    - drupal_cms_installer_de/animations
+    - drupal_cms_installer_de/vendor-highlight
   drupal_cms_installer_theme/drupal.progress:
     - drupal_cms_installer_de/progress-override

@@ -8,39 +8,56 @@
   :root {
     color-scheme: dark;
     --gin-color-title: #fff;
-    --gin-color-text: #d2d3d3;
-    --gin-color-text-light: #9e9fa0;
+    --gin-color-text: #d3d8e6;
+    --gin-color-text-light: #9aa4c2;
     --gin-shadow-button: rgba(0, 0, 0, .9);
     --gin-color-button-text: #111;
-    --gin-color-focus: rgb(81, 168, 255);
+    /*
+     * Drupal-Markenblau statt dem rohen Light-Mode-Blau. --gin-color-primary
+     * wird u.a. von Primary-Buttons, der Fortschrittsleiste (progress__bar)
+     * und dem Auswahl-Rahmen der Template-Karten genutzt - ohne diesen
+     * Override bliebe dort überall das unangepasste Light-Mode-Blau
+     * (rgb(5, 80, 230)) stehen.
+     */
+    --gin-color-primary-rgb: 0, 156, 222;
+    --gin-color-primary: rgb(var(--gin-color-primary-rgb));
+    --gin-color-primary-hover: #33b5e6;
+    --gin-color-primary-active: #66c8ec;
+    /* Drupal-Markenblau statt neutralem Fokus-Blau. */
+    --gin-color-focus: #009cde;
     --gin-color-focus-border: rgba(0, 0, 0, .8);
     --gin-color-focus-neutral-rgb: rgba(255, 255, 255, .8);
     --gin-color-disabled: #646464;
     --gin-color-disabled-border: #646464;
-    --gin-color-disabled-bg: #47474c;
+    --gin-color-disabled-bg: #2b4a8f;
     --gin-color-warning: #dec15f;
     --gin-bg-warning-light: rgba(222, 193, 95, .1);
-    --gin-color-danger: #ce6060;
-    --gin-color-danger-lightest: #483439;
+    /* Drupal-Markenrot statt neutralem Rot. */
+    --gin-color-danger: #f46351;
+    --gin-color-danger-lightest: #3a2028;
     --gin-color-green: #32cea4;
     --gin-color-info: #559bca;
     --gin-bg-input: var(--gin-bg-layer2);
-    --gin-bg-app: #1b1b1d;
-    --gin-bg-layer: #2a2a2d;
-    --gin-bg-layer2: #3b3b3f;
-    --gin-bg-layer3: #47474c;
-    --gin-bg-layer4: #19191b;
+    /*
+     * Navy-basierte Dark-Mode-Skala statt neutralem Fast-Schwarz, angelehnt
+     * an die offizielle Drupal-Markenfarbe Navy (#12285F).
+     */
+    --gin-bg-app: #0b1730;
+    --gin-bg-layer: #12285f;
+    --gin-bg-layer2: #1d3671;
+    --gin-bg-layer3: #2b4a8f;
+    --gin-bg-layer4: #070f22;
     --gin-bg-secondary: var(--gin-bg-app);
     --gin-bg-unpublished: var(--gin-bg-warning-light);
     --gin-color-contextual: var(--gin-bg-layer3);
-    --gin-border-color: #43454a;
+    --gin-border-color: #2c3f6e;
     --gin-border-color-secondary: rgba(255, 255, 255, .075);
     --gin-border-color-layer: rgba(0, 0, 0, .05);
-    --gin-border-color-layer2: #76777b;
-    --gin-border-color-table: #43454a;
+    --gin-border-color-layer2: #4a5f9c;
+    --gin-border-color-table: #2c3f6e;
     --gin-border-color-table-header: rgba(255, 255, 255, .12);
     --gin-border-color-form-element: var(--gin-border-color-layer2);
-    --gin-bg-header: #1b1b1d;
+    --gin-bg-header: #0b1730;
     --gin-switch: var(--gin-color-primary);
     --gin-status-text: var(--gin-color-text-light);
     --gin-status-bg: rgba(255, 255, 255, .1);
@@ -48,7 +65,7 @@
     --gin-status-success-bg: #26a76930;
     --gin-status-warning-text: #e8d185;
     --gin-status-warning-bg: rgba(226, 151, 0, .15);
-    --gin-status-danger-text: #e69e9e;
+    --gin-status-danger-text: #f0a89e;
     --gin-status-danger-bg: rgba(222, 117, 96, .15);
     --gin-shadow-l1: 0 1px 2px rgb(0 0 0 / 2%), 0 3px 4px rgb(0 0 0 / 3%), 0 5px 8px rgb(0 0 0 / 4%);
     --gin-shadow-l2: 0 1px 2px rgb(0 0 0 / 2%), 0 3px 4px rgb(0 0 0 / 3%), 0 5px 8px rgb(0 0 0 / 4%), 0 20px 24px rgb(0 0 0 / 12%);
@@ -88,6 +105,33 @@
     box-shadow: 0 0 0 2px var(--gin-color-focus-border);
   }
 
+  label {
+    color: var(--gin-color-text);
+  }
+
+  /* "Erweiterte Optionen" / Advanced options (Claro <details> component) */
+  .claro-details {
+    background-color: var(--gin-bg-layer);
+    border-color: var(--gin-border-color);
+  }
+
+  .claro-details__summary {
+    color: var(--gin-color-text);
+  }
+
+  .claro-details__summary:hover {
+    color: var(--gin-color-focus);
+    background-color: var(--gin-bg-layer2);
+  }
+
+  .claro-details[open] > .claro-details__summary:focus {
+    color: var(--gin-color-focus);
+  }
+
+  .claro-details__wrapper {
+    color: var(--gin-color-text);
+  }
+
   /* Progress bar */
   .cms-installer .progress__track {
     background-color: var(--gin-bg-layer3);
@@ -104,6 +148,22 @@
 
   #edit-add-ons label:hover {
     background-color: var(--gin-bg-layer);
+  }
+
+  /*
+   * Die Beschreibungs- und Byline-Texte der Template-Karten sind mit 13-14px
+   * recht klein und wirken neben dem kräftigen weißen Titel blass, obwohl
+   * der Farbkontrast rechnerisch ausreicht. Etwas größer und einen Tick
+   * heller für bessere Lesbarkeit.
+   */
+  #edit-add-ons .site-template .description p {
+    color: #aeb8d6;
+    font-size: 15px;
+  }
+
+  #edit-add-ons .site-template .creator {
+    color: #aeb8d6;
+    font-size: 14px;
   }
 
   /* Buttons */
@@ -129,5 +189,37 @@
   select.cms-installer__language-switcher option {
     background-color: var(--gin-bg-layer2);
     color: var(--gin-color-text);
+  }
+
+  /*
+   * Globe + chevron icons are inline SVGs with a hardcoded fill="#36393F"
+   * (dark charcoal, made for a light header background) - nearly invisible
+   * on our navy header. CSS fill overrides the presentation attribute.
+   */
+  .select-wrapper svg path {
+    fill: var(--gin-icon-color);
+  }
+
+  /*
+   * Step-Illustrationen: Jede der vier SVGs (step-account/name/recipes/
+   * settings) bringt ihren eigenen, teils sehr hellen Pastell-Hintergrund
+   * mit (Illustrator-Export mit hunderten Pfaden – einzelne Füllfarben
+   * blind umzufärben riskiert, dass Formen mit dem neuen Hintergrund
+   * verschmelzen). Statt die SVGs anzufassen: sanft abdunkeln und den
+   * Übergang zur Seite weich auslaufen lassen, damit der harte
+   * Hell/Dunkel-Bruch verschwindet.
+   */
+  .cms-installer__pattern svg {
+    filter: brightness(.82) saturate(.9);
+  }
+
+  @media (min-width: 78em) {
+    .cms-installer__pattern::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(to right, var(--gin-bg-app) 0%, transparent 18%);
+    }
   }
 }

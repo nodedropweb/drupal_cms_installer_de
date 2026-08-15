@@ -15,3 +15,29 @@ dark-mode:
   css:
     theme:
       css/dark-mode.css: {}
+
+typography:
+  css:
+    theme:
+      css/typography.css: {}
+
+animations:
+  css:
+    theme:
+      css/animations.css: {}
+  js:
+    js/submit-transition.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+
+vendor-highlight:
+  js:
+    # Must run after installer-translations, which matches the full
+    # "Created by X" string as one text node - splitting it into spans
+    # first would break that match.
+    js/vendor-highlight.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - drupal_cms_installer_de/installer-translations

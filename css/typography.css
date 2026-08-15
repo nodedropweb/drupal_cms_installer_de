@@ -1,0 +1,83 @@
+/**
+ * @file
+ * Typography treatment for the Drupal CMS Installer DE theme, adapted from
+ * a design mockup: Space Grotesk for headings, JetBrains Mono for meta text
+ * and links, Public Sans for body copy. Self-hosted (no external requests)
+ * to stay consistent with the project's no-CDN policy.
+ *
+ * Scoped to dark mode only, alongside the rest of the dark-mode work this
+ * theme does in dark-mode.css.
+ */
+
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+  src: url('../fonts/SpaceGrotesk-Variable.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url('../fonts/JetBrainsMono-Variable.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Public Sans';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url('../fonts/PublicSans-Variable.woff2') format('woff2');
+}
+
+@media (prefers-color-scheme: dark) {
+  .cms-installer__main-heading {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    letter-spacing: -1.05px;
+  }
+
+  .site-template__title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.17px;
+  }
+
+  /*
+   * Byline keeps the lighter color from the readability fix above (the
+   * mockup's original tone was too dim, same problem we just fixed) - only
+   * the font family changes here.
+   */
+  #edit-add-ons .site-template .creator {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  /* Vendor name gets its own span via js/vendor-highlight.js. */
+  #edit-add-ons .site-template .creator .creator__vendor {
+    color: oklch(0.72 0.15 250);
+  }
+
+  #edit-add-ons .site-template .description p {
+    font-family: 'Public Sans', sans-serif;
+  }
+
+  #edit-add-ons .site-template__links-wrapper a {
+    color: oklch(0.75 0.14 255);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12.5px;
+    font-weight: 500;
+    text-underline-offset: 3px;
+  }
+
+  #edit-add-ons .site-template__links-wrapper a:hover {
+    color: oklch(0.82 0.14 255);
+  }
+
+  #edit-add-ons .badge {
+    border: 1px solid oklch(0.3 0.02 260 / 0.5);
+    font-family: 'Public Sans', sans-serif;
+  }
+}
