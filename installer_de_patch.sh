@@ -42,24 +42,54 @@ apply_installer_de() {
     php web/profiles/contrib/drupal_cms_installer_de/scripts/i18n-extras-fix.php
 }
 
+
+# Entfernt das deutsche Installer-Theme wieder aus composer.json, sobald sein
+# einziger Zweck (den Installer-Wizard einmalig beschriften) erledigt ist.
+# Grund: "composer require drupal/drupal_cms_installer_de" in
+# apply_installer_de() traegt das Paket dauerhaft ein, nicht nur fuer die
+# Installationsroutine. Jede spaetere Composer-Operation - auch Project
+# Browsers UI-Install ueber Package Manager, das als www-data ohne
+# GitHub-Zugangsdaten laeuft - muss dann das VCS-Repository kontaktieren und
+# schlaegt mit einem Host-Key- oder Auth-Fehler fehl, obwohl das eigentlich
+# angeforderte Paket damit nichts zu tun hat.
+cleanup_installer_de() {
+    echo -e "${BLUE}🧹 Entferne deutsches Installer-Theme wieder (nicht mehr benötigt)...${NC}"
+    composer remove drupal/drupal_cms_installer_de --no-interaction
+    composer config --unset repositories.installer-de
+}
+
 echo -e "${BLUE}🚀 Drupal CMS Installer – deutsches Theme${NC}"
 
 # Fall A: Im aktuellen Verzeichnis steht bereits ein via Composer
 # installiertes Drupal-CMS-Projekt (composer.json + web/profiles/contrib/
 # drupal_cms_installer liegen direkt hier). Dann NICHT erneut
 # "composer create-project" ausführen (das würde ein zweites, ungenutztes
-# Projekt in einem Unterordner "cms" anlegen), sondern direkt nachpatchen.
+# Projekt in einem Unterordner "cms" anlegen).
 if [ -f "composer.json" ] && [ -d "web/profiles/contrib/drupal_cms_installer" ]; then
+    # Fall A2: Die Seite ist bereits fertig installiert (settings.php
+    # existiert) - der Patch greift ohnehin nur beim Aufruf von
+    # core/install.php, das ist hier längst gelaufen. Erneutes Anwenden
+    # wäre wirkungslos; stattdessen aufräumen, siehe cleanup_installer_de().
+    if [ -f "web/sites/default/settings.php" ]; then
+        echo -e "${YELLOW}📂 Diese Seite ist bereits fertig installiert.${NC}"
+        cleanup_installer_de
+        echo -e "${GREEN}✅ Fertig! Das deutsche Installer-Theme wurde entfernt (keine dauerhafte${NC}"
+        echo -e "${GREEN}   Abhängigkeit mehr, kein Composer-Zugriff auf GitHub bei künftigen${NC}"
+        echo -e "${GREEN}   Modul-Installationen).${NC}"
+        exit 0
+    fi
+
+    # Fall A1: Composer-Projekt existiert, aber der Installer-Wizard wurde
+    # noch nicht durchlaufen - Patch wie gewohnt anwenden.
     echo -e "${YELLOW}📂 Bestehende Drupal-CMS-Installation im aktuellen Verzeichnis erkannt.${NC}"
     echo -e "${BLUE}🔧 Wende das deutsche Installer-Theme nachträglich an...${NC}"
 
     apply_installer_de
 
     echo -e "${GREEN}✅ Fertig! Das deutsche Installer-Theme ist jetzt eingebunden.${NC}"
-    echo -e "${YELLOW}ℹ️ Hinweis: Ist diese Seite bereits fertig installiert (settings.php existiert${NC}"
-    echo -e "${YELLOW}   bereits), hat das keinen sichtbaren Effekt auf die laufende Seite. Der Patch${NC}"
-    echo -e "${YELLOW}   greift erst beim nächsten Aufruf von core/install.php, z.B. bei einer${NC}"
-    echo -e "${YELLOW}   Neuinstallation oder auf einer frischen Kopie dieses Projekts.${NC}"
+    echo -e "${YELLOW}ℹ️ Führe dieses Skript nach Abschluss des Installer-Wizards (sobald${NC}"
+    echo -e "${YELLOW}   web/sites/default/settings.php existiert) im selben Verzeichnis erneut${NC}"
+    echo -e "${YELLOW}   aus, um das Theme automatisch wieder zu entfernen.${NC}"
     exit 0
 fi
 
@@ -83,3 +113,6 @@ apply_installer_de
 
 echo -e "${GREEN}✅ Fertig! Drupal CMS wurde in den Ordner '$TARGET_DIR' installiert.${NC}"
 echo -e "${GREEN}Du kannst jetzt deinen Webserver auf $(pwd)/web zeigen lassen.${NC}"
+echo -e "${YELLOW}ℹ️ Führe dieses Skript nach Abschluss des Installer-Wizards (sobald${NC}"
+echo -e "${YELLOW}   $TARGET_DIR/web/sites/default/settings.php existiert) im Ordner${NC}"
+echo -e "${YELLOW}   '$TARGET_DIR' erneut aus, um das Theme automatisch wieder zu entfernen.${NC}"

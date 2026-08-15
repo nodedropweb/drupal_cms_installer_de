@@ -46,6 +46,19 @@ ein **bereits per Composer installiertes** Drupal-CMS-Projekt nachträglich patc
   Wichtig: Ist die Seite bereits fertig installiert (es existiert schon eine
   `web/sites/default/settings.php`), hat der Patch keinen sichtbaren Effekt auf die laufende
   Seite — der Installer-Theme-Fix greift nur bei einem (erneuten) Aufruf von `core/install.php`.
+  In diesem Fall entfernt das Script `drupal/drupal_cms_installer_de` stattdessen automatisch
+  wieder aus `composer.json` (siehe Warnung unten).
+
+> ⚠️ **Nach der Installation aufräumen**: `drupal/drupal_cms_installer_de` wird als normale
+> (nicht `--dev`) Abhängigkeit eingetragen und bleibt sonst dauerhaft in `composer.json` stehen,
+> obwohl es nach der Ersteinrichtung wirkungslos ist. Das ist mehr als nur unnötiger Ballast —
+> jede spätere `composer`-Operation muss dann das VCS-Repository dieses Pakets kontaktieren,
+> auch für völlig unabhängige Anfragen (z. B. Project Browsers UI-Install über Package Manager,
+> das meist als eigener Systembenutzer ohne GitHub-Zugangsdaten läuft und dabei mit einem
+> Host-Key- oder Auth-Fehler abbricht). Führe `installer_de_patch.sh` deshalb **ein zweites Mal**
+> im selben Verzeichnis aus, sobald `web/sites/default/settings.php` existiert — das Script
+> erkennt das automatisch und entfernt die Abhängigkeit wieder (`composer remove` +
+> `composer config --unset repositories.installer-de`).
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/nodedropweb/drupal_cms_installer_de/master/installer_de_patch.sh | bash
@@ -89,7 +102,18 @@ The script automatically detects whether to install a **fresh** Drupal CMS or pa
 
   Note: if the site is already fully installed (a `web/sites/default/settings.php` already
   exists), the patch has no visible effect on the running site — the installer theme fix only
-  applies the next time `core/install.php` runs.
+  applies the next time `core/install.php` runs. In that case the script instead automatically
+  removes `drupal/drupal_cms_installer_de` from `composer.json` again (see warning below).
+
+> ⚠️ **Clean up after installation**: `drupal/drupal_cms_installer_de` is added as a normal
+> (non-`--dev`) dependency and would otherwise stay in `composer.json` forever, even though it's
+> inert after the initial setup. That's more than just clutter — every later `composer`
+> operation then has to contact this package's VCS repository, even for completely unrelated
+> requests (e.g. Project Browser's UI install via Package Manager, which typically runs as a
+> separate system user with no GitHub credentials and fails with a host-key or auth error).
+> Run `installer_de_patch.sh` a **second time** in the same directory once
+> `web/sites/default/settings.php` exists — the script detects that automatically and removes
+> the dependency again (`composer remove` + `composer config --unset repositories.installer-de`).
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/nodedropweb/drupal_cms_installer_de/master/installer_de_patch.sh | bash
