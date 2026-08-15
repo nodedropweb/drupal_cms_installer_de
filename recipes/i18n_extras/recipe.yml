@@ -1,16 +1,26 @@
 name: 'I18N Extras (DE)'
-description: 'Aktiviert pb_localizer, yoast_seo_i18n und default_content_locale für mehrsprachige Drupal-CMS-Installationen und stellt den Gin-Admin-Theme-Modus auf automatisch.'
+description: 'Aktiviert pb_localizer, yoast_seo_i18n und default_content_locale für mehrsprachige Drupal-CMS-Installationen, stellt den Gin-Admin-Theme-Modus auf automatisch und schaltet den Project-Browser-UI-Install-Button frei.'
 type: 'Drupal CMS'
 install:
   - pb_localizer
   - yoast_seo_i18n
   - default_content_locale
   # Wird i.d.R. schon vom Site-Template installiert; hier zusätzlich gelistet,
-  # damit die Config-Action unten unabhängig von der Anwendungsreihenfolge
-  # der Rezepte funktioniert (gin.settings muss zu dem Zeitpunkt existieren).
+  # damit die Config-Actions unten unabhängig von der Anwendungsreihenfolge
+  # der Rezepte funktionieren (gin.settings/project_browser.admin_settings
+  # müssen zu dem Zeitpunkt existieren).
   - gin
+  - project_browser
 config:
   actions:
     gin.settings:
       simpleConfigUpdate:
         enable_darkmode: 'auto'
+    # Site-Templates (z. B. haven) setzen dies zwar selbst, aber nur beim
+    # ursprünglichen Installationszeitpunkt - ein späteres `composer update`
+    # zieht keine neuen Recipe-Config-Werte in bereits installierte Sites
+    # nach. Deshalb hier zusätzlich explizit setzen, damit i18n_extras nicht
+    # von der zufälligen Recipe-Version zum Installationszeitpunkt abhängt.
+    project_browser.admin_settings:
+      simpleConfigUpdate:
+        allow_ui_install: true
