@@ -28,9 +28,18 @@ apply_installer_de() {
     echo -e "${BLUE}🎨 Füge deutsches Theme hinzu...${NC}"
     composer require drupal/drupal_cms_installer_de:dev-master --no-interaction
 
+    echo -e "${BLUE}🧩 Füge Zusatzmodule hinzu (pb_localizer, yoast_seo_i18n, default_content_locale)...${NC}"
+    composer require --no-interaction \
+        drupal/pb_localizer:^3.0 \
+        drupal/yoast_seo_i18n:^1.0 \
+        drupal/default_content_locale:1.x-dev
+
     echo -e "${BLUE}🔧 Patche Installer-Konfiguration...${NC}"
     # Wir rufen es direkt über PHP auf, falls die Composer-Verknüpfung im Vendor noch nicht sitzt
     php web/profiles/contrib/drupal_cms_installer_de/scripts/theme-fix.php
+
+    echo -e "${BLUE}ℹ️  Hinweis: Die Zusatzmodule liegen jetzt im Code, sind aber noch nicht aktiviert.${NC}"
+    echo -e "${BLUE}   Aktivieren mit: drush pm:enable -y pb_localizer yoast_seo_i18n default_content_locale${NC}"
 }
 
 echo -e "${BLUE}🚀 Drupal CMS Installer – deutsches Theme${NC}"
