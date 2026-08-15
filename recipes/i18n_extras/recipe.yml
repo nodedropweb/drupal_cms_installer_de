@@ -1,7 +1,16 @@
 name: 'I18N Extras (DE)'
-description: 'Aktiviert pb_localizer, yoast_seo_i18n und default_content_locale für mehrsprachige Drupal-CMS-Installationen.'
+description: 'Aktiviert pb_localizer, yoast_seo_i18n und default_content_locale für mehrsprachige Drupal-CMS-Installationen und stellt den Gin-Admin-Theme-Modus auf automatisch.'
 type: 'Drupal CMS'
 install:
   - pb_localizer
   - yoast_seo_i18n
   - default_content_locale
+  # Wird i.d.R. schon vom Site-Template installiert; hier zusätzlich gelistet,
+  # damit die Config-Action unten unabhängig von der Anwendungsreihenfolge
+  # der Rezepte funktioniert (gin.settings muss zu dem Zeitpunkt existieren).
+  - gin
+config:
+  actions:
+    gin.settings:
+      simpleConfigUpdate:
+        enable_darkmode: 'auto'
