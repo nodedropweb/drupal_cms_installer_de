@@ -1,26 +1,30 @@
 name: 'I18N Extras (DE)'
-description: 'Aktiviert pb_localizer, yoast_seo_i18n und default_content_locale für mehrsprachige Drupal-CMS-Installationen, stellt den Gin-Admin-Theme-Modus auf automatisch und schaltet den Project-Browser-UI-Install-Button frei.'
+description: 'Aktiviert pb_localizer, yoast_seo_i18n und default_content_locale für mehrsprachige Drupal-CMS-Installationen und stellt den Gin-Admin-Theme-Modus auf automatisch.'
 type: 'Drupal CMS'
 install:
   - pb_localizer
   - yoast_seo_i18n
   - default_content_locale
   # Wird i.d.R. schon vom Site-Template installiert; hier zusätzlich gelistet,
-  # damit die Config-Actions unten unabhängig von der Anwendungsreihenfolge
-  # der Rezepte funktionieren (gin.settings/project_browser.admin_settings
-  # müssen zu dem Zeitpunkt existieren).
+  # damit die Config-Action unten unabhängig von der Anwendungsreihenfolge
+  # der Rezepte funktioniert (gin.settings muss zu dem Zeitpunkt existieren).
+  #
+  # ACHTUNG: project_browser bewusst NICHT hier auflisten (auch nicht per
+  # simpleConfigUpdate-Action konfigurieren) - dieses Rezept wird laut
+  # drupal_cms_installer_choose_template() VOR dem gewählten Site-Template
+  # eingereiht. Würde project_browser hier installiert, legt Drupal dabei
+  # dessen rohe Default-Config (project_browser.admin_settings, u. a.
+  # max_selections: null) an, bevor das Site-Template (z. B. haven) seine
+  # eigene, vollständige config/project_browser.admin_settings.yml
+  # importieren kann - Drupal-Rezepte überschreiben aber keine bereits
+  # existierende Config, der Import des Templates wird dann stillschweigend
+  # übersprungen. Ergebnis: die Auswahl-Leiste ("Auswählen" + Sammelbutton)
+  # taucht statt des direkten Install-Buttons auf, obwohl ein Template
+  # gewählt wurde. Alle aktuellen Site-Templates (starter/haven/byte) setzen
+  # allow_ui_install ohnehin selbst - dafür braucht es hier keine Ergänzung.
   - gin
-  - project_browser
 config:
   actions:
     gin.settings:
       simpleConfigUpdate:
         enable_darkmode: 'auto'
-    # Site-Templates (z. B. haven) setzen dies zwar selbst, aber nur beim
-    # ursprünglichen Installationszeitpunkt - ein späteres `composer update`
-    # zieht keine neuen Recipe-Config-Werte in bereits installierte Sites
-    # nach. Deshalb hier zusätzlich explizit setzen, damit i18n_extras nicht
-    # von der zufälligen Recipe-Version zum Installationszeitpunkt abhängt.
-    project_browser.admin_settings:
-      simpleConfigUpdate:
-        allow_ui_install: true
