@@ -30,6 +30,13 @@ ein **bereits per Composer installiertes** Drupal-CMS-Projekt nachträglich patc
 
 * **Frische Installation**: Führe das Script in einem leeren Verzeichnis aus. Es lädt Drupal
   CMS per `composer create-project` in einen neuen Unterordner `cms/` und wendet den Patch dort an.
+  Über ein optionales erstes Argument lässt sich der Zielordner anpassen (Default bleibt `cms`).
+  Da bei `curl | bash` Argumente nicht automatisch durchgereicht werden, ist die `-s --`-Syntax
+  nötig:
+
+  ```bash
+  curl -sSL https://raw.githubusercontent.com/nodedropweb/drupal_cms_installer_de/master/installer_de_patch.sh | bash -s -- drupalcms
+  ```
 * **Bestehendes Projekt**: Führe das Script direkt im Wurzelverzeichnis deines bestehenden
   Drupal-CMS-Composer-Projekts aus (dort, wo `composer.json` und `web/` liegen — z.B. dein
   Projekt-Root, nicht der `web/`-Ordner selbst). Das Script erkennt die vorhandene Installation
@@ -67,7 +74,13 @@ The script automatically detects whether to install a **fresh** Drupal CMS or pa
 **already Composer-installed** Drupal CMS project:
 
 * **Fresh install**: Run the script in an empty directory. It downloads Drupal CMS via
-  `composer create-project` into a new `cms/` subfolder and applies the patch there.
+  `composer create-project` into a new `cms/` subfolder and applies the patch there. An optional
+  first argument overrides the target folder (default stays `cms`). Since `curl | bash` doesn't
+  forward arguments automatically, use the `-s --` syntax:
+
+  ```bash
+  curl -sSL https://raw.githubusercontent.com/nodedropweb/drupal_cms_installer_de/master/installer_de_patch.sh | bash -s -- drupalcms
+  ```
 * **Existing project**: Run the script directly in the root of your existing Drupal CMS
   Composer project (where `composer.json` and `web/` live — your project root, not the
   `web/` folder itself). The script detects the existing installation via
