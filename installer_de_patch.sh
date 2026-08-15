@@ -1,6 +1,12 @@
 #!/bin/bash
 set -e
 
+# Zielverzeichnis für Fall B (Neuinstallation). Per Default "cms", damit
+# bestehende Aufrufe ohne Argument unverändert funktionieren. Bei
+# "curl | bash" muss das Argument über "-s --" durchgereicht werden:
+#   curl -sSL .../installer_de_patch.sh | bash -s -- drupalcms
+TARGET_DIR="${1:-cms}"
+
 # Farben für die Ausgabe
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
@@ -49,21 +55,22 @@ if [ -f "composer.json" ] && [ -d "web/profiles/contrib/drupal_cms_installer" ];
 fi
 
 # Fall B: Kein bestehendes Projekt gefunden - frisches Drupal CMS in einen
-# neuen Unterordner "cms" installieren (bisheriges Verhalten).
-if [ -d "cms" ]; then
-    echo -e "${RED}⚠️ Der Ordner 'cms' existiert bereits. Bitte lösche ihn mit 'rm -rf cms' und starte erneut.${NC}"
+# neuen Unterordner installieren (Standard: "cms", überschreibbar über
+# das erste Skript-Argument, siehe TARGET_DIR oben).
+if [ -d "$TARGET_DIR" ]; then
+    echo -e "${RED}⚠️ Der Ordner '$TARGET_DIR' existiert bereits. Bitte lösche ihn mit 'rm -rf $TARGET_DIR' und starte erneut.${NC}"
     exit 1
 fi
 
 echo -e "${BLUE}📦 Lade Drupal CMS Core...${NC}"
-composer create-project drupal/cms cms --no-install --no-interaction
+composer create-project drupal/cms "$TARGET_DIR" --no-install --no-interaction
 
-cd cms
+cd "$TARGET_DIR"
 
 echo -e "${BLUE}📥 Installiere Abhängigkeiten...${NC}"
 composer install
 
 apply_installer_de
 
-echo -e "${GREEN}✅ Fertig! Drupal CMS wurde in den Ordner 'cms' installiert.${NC}"
+echo -e "${GREEN}✅ Fertig! Drupal CMS wurde in den Ordner '$TARGET_DIR' installiert.${NC}"
 echo -e "${GREEN}Du kannst jetzt deinen Webserver auf $(pwd)/web zeigen lassen.${NC}"
