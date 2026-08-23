@@ -5,18 +5,23 @@
 // automatisch zusammen mit dem gewählten Site-Template angewendet wird - unabhängig davon,
 // welches Template der Nutzer auswählt.
 //
-// WICHTIG: Wird absichtlich in SiteTemplateForm::submitForm() eingereiht, NACH dem
-// gewählten Site-Template - nicht in drupal_cms_installer_choose_template() (vor dem
-// Template, wie in einer früheren Version dieses Skripts). Grund: pb_localizer.info.yml
-// deklariert project_browser als Modul-Abhängigkeit. Würde i18n_extras vor dem
-// Site-Template angewendet, installiert Drupal project_browser (mit dessen rohen
-// Default-Werten, u. a. max_selections: null) bereits an dieser Stelle - noch bevor
-// z. B. haven seine eigene, vollständige config/project_browser.admin_settings.yml
-// importieren kann. Drupals strikte Recipe-Prüfung (ConfigConfigurator) wirft dann eine
-// RecipePreExistingConfigException für genau diese eine Config, der Import wird
-// übersprungen, der Rest des Site-Templates wendet sich aber unauffällig normal an.
-// Sichtbare Folge: die Checkbox-Auswahlleiste im Project Browser erscheint statt des
-// direkten Install-Buttons, obwohl ein Site-Template gewählt wurde.
+// Wird weiterhin absichtlich in SiteTemplateForm::submitForm() eingereiht, NACH dem
+// gewählten Site-Template (nicht in drupal_cms_installer_choose_template(), vor dem
+// Template). Das allein reicht aber NICHT aus, um zu garantieren, dass i18n_extras
+// nach der eigentlichen Anwendung des Site-Templates läuft: drupal_cms_installer_
+// apply_recipes() (im drupal_cms_installer-Profil) führt bereits lokal vorhandene
+// Rezepte SOFORT im selben Batch-Set aus, während Rezepte, die erst per Composer
+// nachgeladen werden müssen (z. B. "convene", das anders als starter/haven/byte nicht
+// vorab in composer.json requiret ist), ihre eigentliche Anwendung über einen
+// verschachtelten batch_set()-Aufruf in ein SPÄTERES Batch-Set verschieben. Da dieses
+// Paket i18n_extras direkt bündelt, ist es immer schon lokal vorhanden und läuft daher
+// oft VOR der tatsächlichen Anwendung eines nachzuladenden Site-Templates - trotz
+// korrekter Warteschlangen-Reihenfolge hier.
+//
+// Der eigentliche Fix gegen die dadurch verlorene project_browser.admin_settings-
+// Config (allow_ui_install, max_selections) sitzt deshalb nicht hier, sondern als
+// robuste, reihenfolge-unabhängige Config-Action in recipes/i18n_extras/recipe.yml -
+// siehe die Kommentare dort für die volle Herleitung.
 
 $root = getcwd();
 $targetPath = 'web/profiles/contrib/drupal_cms_installer/src/Form/SiteTemplateForm.php';

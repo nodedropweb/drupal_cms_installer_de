@@ -5,26 +5,47 @@ install:
   - pb_localizer
   - yoast_seo_i18n
   - default_content_locale
-  # Wird i.d.R. schon vom Site-Template installiert; hier zusätzlich gelistet,
-  # damit die Config-Action unten unabhängig von der Anwendungsreihenfolge
-  # der Rezepte funktioniert (gin.settings muss zu dem Zeitpunkt existieren).
-  #
-  # ACHTUNG: project_browser bewusst NICHT hier auflisten (auch nicht per
-  # simpleConfigUpdate-Action konfigurieren) - dieses Rezept wird laut
-  # drupal_cms_installer_choose_template() VOR dem gewählten Site-Template
-  # eingereiht. Würde project_browser hier installiert, legt Drupal dabei
-  # dessen rohe Default-Config (project_browser.admin_settings, u. a.
-  # max_selections: null) an, bevor das Site-Template (z. B. haven) seine
-  # eigene, vollständige config/project_browser.admin_settings.yml
-  # importieren kann - Drupal-Rezepte überschreiben aber keine bereits
-  # existierende Config, der Import des Templates wird dann stillschweigend
-  # übersprungen. Ergebnis: die Auswahl-Leiste ("Auswählen" + Sammelbutton)
-  # taucht statt des direkten Install-Buttons auf, obwohl ein Template
-  # gewählt wurde. Alle aktuellen Site-Templates (starter/haven/byte) setzen
-  # allow_ui_install ohnehin selbst - dafür braucht es hier keine Ergänzung.
   - gin
+  # Bewusst WIEDER explizit gelistet (frühere Version dieser Datei hat es
+  # absichtlich weggelassen, siehe Git-Historie). Grund für die Kehrtwende:
+  #
+  # pb_localizer.info.yml deklariert project_browser als Modul-Abhängigkeit -
+  # ob wir es hier auflisten oder nicht, Drupal installiert es so oder so als
+  # Kaskaden-Abhängigkeit von pb_localizer. Das Weglassen hat das Problem also
+  # nie wirklich vermieden, nur den Ort verschoben, an dem es passiert.
+  #
+  # Der eigentliche Grund für kaputte allow_ui_install-Werte liegt woanders:
+  # drupal_cms_installer_apply_recipes() (im drupal_cms_installer-Profil,
+  # NICHT in diesem Paket) behandelt bereits lokal vorhandene Rezepte anders
+  # als nachzuladende. Dieses Paket (drupal_cms_installer_de) bringt
+  # i18n_extras direkt gebündelt mit -> es ist IMMER schon lokal vorhanden
+  # und landet dadurch im selben, sofort laufenden Batch-Set wie
+  # administrator_role. Ein Site-Template wie "convene", das nicht in
+  # composer.json vorab requiret ist (anders als starter/haven/byte), muss
+  # dagegen erst per Composer nachgeladen werden - seine eigentliche
+  # Rezept-Anwendung läuft deshalb über einen VERSCHACHTELTEN batch_set()-
+  # Aufruf in einem SPÄTEREN Batch-Set. Das heißt: obwohl SiteTemplateForm
+  # i18n_extras absichtlich NACH dem Site-Template in die Warteschlange
+  # einreiht, läuft es in der Praxis oft VOR dessen tatsächlicher Anwendung -
+  # project_browser wird dann mit seinen rohen Modul-Defaults installiert,
+  # bevor z. B. convenes eigene config/project_browser.admin_settings.yml
+  # (allow_ui_install: true) zum Zug kommt. Und weil project_browser zu dem
+  # Zeitpunkt schon installiert ist, überspringt Drupal die erneute
+  # Installation beim Site-Template komplett - dessen Override kommt nie an.
+  #
+  # Der robuste Fix ist deshalb NICHT, die Ausführungsreihenfolge zu
+  # gewinnen (das ist nicht zuverlässig steuerbar), sondern die gewünschten
+  # Werte per Config-Action unten explizit zu erzwingen - das funktioniert
+  # unabhängig davon, ob project_browser durch dieses Rezept oder durch das
+  # Site-Template zuerst installiert wurde, und unabhängig davon, ob dessen
+  # Config schon existiert.
+  - project_browser
 config:
   actions:
     gin.settings:
       simpleConfigUpdate:
         enable_darkmode: 'auto'
+    project_browser.admin_settings:
+      simpleConfigUpdate:
+        allow_ui_install: true
+        max_selections: 1
