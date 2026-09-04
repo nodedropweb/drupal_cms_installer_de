@@ -46,19 +46,19 @@ ein **bereits per Composer installiertes** Drupal-CMS-Projekt nachträglich patc
   Wichtig: Ist die Seite bereits fertig installiert (es existiert schon eine
   `web/sites/default/settings.php`), hat der Patch keinen sichtbaren Effekt auf die laufende
   Seite — der Installer-Theme-Fix greift nur bei einem (erneuten) Aufruf von `core/install.php`.
-  In diesem Fall entfernt das Script `drupal/drupal_cms_installer_de` stattdessen automatisch
-  wieder aus `composer.json` (siehe Warnung unten).
+  In diesem Fall entfernt das Script den Theme-Ordner stattdessen automatisch wieder.
 
-> ⚠️ **Nach der Installation aufräumen**: `drupal/drupal_cms_installer_de` wird als normale
-> (nicht `--dev`) Abhängigkeit eingetragen und bleibt sonst dauerhaft in `composer.json` stehen,
-> obwohl es nach der Ersteinrichtung wirkungslos ist. Das ist mehr als nur unnötiger Ballast —
-> jede spätere `composer`-Operation muss dann das VCS-Repository dieses Pakets kontaktieren,
-> auch für völlig unabhängige Anfragen (z. B. Project Browsers UI-Install über Package Manager,
-> das meist als eigener Systembenutzer ohne GitHub-Zugangsdaten läuft und dabei mit einem
-> Host-Key- oder Auth-Fehler abbricht). Führe `installer_de_patch.sh` deshalb **ein zweites Mal**
-> im selben Verzeichnis aus, sobald `web/sites/default/settings.php` existiert — das Script
-> erkennt das automatisch und entfernt die Abhängigkeit wieder (`composer remove` +
-> `composer config --unset repositories.installer-de`).
+> ℹ️ **Kein Composer-Eintrag**: `drupal_cms_installer_de` ist kein echtes drupal.org-Projekt und
+> wird deshalb bewusst **nicht** per `composer require` eingebunden — das Script lädt die Dateien
+> stattdessen direkt per `git clone` nach `web/profiles/contrib/drupal_cms_installer_de` (dort
+> findet Drupal Erweiterungen ohnehin automatisch). `composer.json` und `composer.lock` bleiben
+> dadurch komplett unverändert; es gibt keinen VCS-Repository-Eintrag, der spätere
+> `composer`-Operationen (z. B. Project Browsers UI-Install über Package Manager) mit einem
+> Host-Key- oder Auth-Fehler zum Absturz bringen könnte. Nur die echten drupal.org-Zusatzmodule
+> (`pb_localizer`, `yoast_seo_i18n`, `default_content_locale`) landen regulär in `composer.json`.
+> Führe `installer_de_patch.sh` **ein zweites Mal** im selben Verzeichnis aus, sobald
+> `web/sites/default/settings.php` existiert — das Script erkennt das automatisch und entfernt
+> den Theme-Ordner wieder, da er nach der Ersteinrichtung ohnehin inaktiv ist.
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/nodedropweb/drupal_cms_installer_de/master/installer_de_patch.sh | bash
@@ -103,17 +103,19 @@ The script automatically detects whether to install a **fresh** Drupal CMS or pa
   Note: if the site is already fully installed (a `web/sites/default/settings.php` already
   exists), the patch has no visible effect on the running site — the installer theme fix only
   applies the next time `core/install.php` runs. In that case the script instead automatically
-  removes `drupal/drupal_cms_installer_de` from `composer.json` again (see warning below).
+  removes the theme folder again.
 
-> ⚠️ **Clean up after installation**: `drupal/drupal_cms_installer_de` is added as a normal
-> (non-`--dev`) dependency and would otherwise stay in `composer.json` forever, even though it's
-> inert after the initial setup. That's more than just clutter — every later `composer`
-> operation then has to contact this package's VCS repository, even for completely unrelated
-> requests (e.g. Project Browser's UI install via Package Manager, which typically runs as a
-> separate system user with no GitHub credentials and fails with a host-key or auth error).
+> ℹ️ **No composer entry**: `drupal_cms_installer_de` isn't a real drupal.org project, so it's
+> deliberately **not** installed via `composer require` — the script instead downloads it
+> directly with `git clone` into `web/profiles/contrib/drupal_cms_installer_de` (where Drupal
+> discovers extensions automatically anyway). `composer.json` and `composer.lock` stay completely
+> untouched — there's no VCS repository entry that could make later `composer` operations
+> (e.g. Project Browser's UI install via Package Manager) fail with a host-key or auth error.
+> Only the real drupal.org add-on modules (`pb_localizer`, `yoast_seo_i18n`,
+> `default_content_locale`) go into `composer.json` as usual.
 > Run `installer_de_patch.sh` a **second time** in the same directory once
 > `web/sites/default/settings.php` exists — the script detects that automatically and removes
-> the dependency again (`composer remove` + `composer config --unset repositories.installer-de`).
+> the theme folder again, since it's inert after the initial setup anyway.
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/nodedropweb/drupal_cms_installer_de/master/installer_de_patch.sh | bash
