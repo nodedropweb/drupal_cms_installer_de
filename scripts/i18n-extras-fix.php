@@ -41,10 +41,24 @@ if (!file_exists($file)) {
 $content = file_get_contents($file);
 
 $marker = '$this->recipeHandler->enqueue($locator);';
-$ourEnqueueCall = "\\Composer\\InstalledVersions::getInstallPath('drupal/drupal_cms_installer_de') . '/recipes/i18n_extras'";
+// Bewusst kein Composer\InstalledVersions::getInstallPath() - drupal_cms_installer_de
+// wird seit installer_de_patch.sh nicht mehr per Composer eingebunden (siehe dort),
+// Composer weiss also gar nichts von diesem Paket. Der Installationsort ist aber
+// deterministisch (immer web/profiles/contrib/drupal_cms_installer_de), daher genuegt
+// ein fester, von Drupal::root() abgeleiteter Pfad.
+$ourEnqueueCall = "\\Drupal::root() . '/profiles/contrib/drupal_cms_installer_de/recipes/i18n_extras'";
+// Fruehere Skriptversion nutzte Composer\InstalledVersions::getInstallPath(), das seit dem
+// Composer-losen Einbinden des Themes ins Leere laeuft. Projekte, die mit jener Version schon
+// gepatcht wurden, muessen auf den neuen Aufruf migriert werden statt ein zweites Mal injiziert
+// zu werden (sonst wuerde das Rezept doppelt in die Warteschlange eingereiht).
+$legacyEnqueueCall = "\\Composer\\InstalledVersions::getInstallPath('drupal/drupal_cms_installer_de') . '/recipes/i18n_extras'";
 
 if (str_contains($content, $ourEnqueueCall)) {
     echo "\033[34mℹ️ i18n_extras-Rezept ist bereits in den Installer eingebunden.\033[0m\n";
+} elseif (str_contains($content, $legacyEnqueueCall)) {
+    $newContent = str_replace($legacyEnqueueCall, $ourEnqueueCall, $content);
+    file_put_contents($file, $newContent);
+    echo "\033[32m✅ i18n_extras-Rezept-Hook auf Composer-losen Pfad migriert.\033[0m\n";
 } elseif (str_contains($content, $marker)) {
     $injection = $marker . "\n    // DE: i18n_extras (pb_localizer, yoast_seo_i18n, default_content_locale) immer\n    // NACH dem gewählten Site-Template anwenden - siehe Kommentar oben in diesem Skript.\n    \$this->recipeHandler->enqueue($ourEnqueueCall);";
     $newContent = str_replace($marker, $injection, $content);

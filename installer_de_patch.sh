@@ -17,16 +17,30 @@ NC='\033[0m'
 # Bindet das deutsche Installer-Theme in das Drupal-CMS-Projekt im aktuellen
 # Arbeitsverzeichnis ein (composer.json + web/ liegen dort direkt) und
 # patcht die Installer-Konfiguration.
+#
+# Wichtig: drupal_cms_installer_de ist KEIN echtes drupal.org-Projekt. Ein
+# "composer require" dafuer wuerde einen dauerhaften VCS-Repository-Eintrag in
+# composer.json erzwingen (Composer kann sonst gar nicht herausfinden, woher
+# das Paket kommt) - und genau dieser Eintrag laesst jede spaetere
+# Composer-Operation, auch Project Browsers UI-Install ueber Package Manager
+# (laeuft als eigener Systembenutzer ohne GitHub-Zugangsdaten), mit einem
+# Host-Key- oder Auth-Fehler abbrechen. Deshalb wird das Theme hier bewusst
+# NICHT ueber Composer eingebunden, sondern direkt per "git clone" an die
+# Stelle gelegt, an der Drupal Erweiterungen ohnehin automatisch findet
+# (web/profiles/*) - composer.json bleibt dabei komplett unangetastet.
 apply_installer_de() {
+    echo -e "${BLUE}🎨 Lade deutsches Installer-Theme (ohne Composer, damit composer.json${NC}"
+    echo -e "${BLUE}   unangetastet bleibt und der Project Browser nicht bricht)...${NC}"
+    rm -rf web/profiles/contrib/drupal_cms_installer_de
+    mkdir -p web/profiles/contrib
+    git clone --quiet --depth 1 --single-branch --branch master \
+        https://github.com/nodedropweb/drupal_cms_installer_de.git \
+        web/profiles/contrib/drupal_cms_installer_de
+    rm -rf web/profiles/contrib/drupal_cms_installer_de/.git
+
     echo -e "${BLUE}⚙️ Erlaube Entwicklungs-Versionen (dev)...${NC}"
     composer config minimum-stability dev
     composer config prefer-stable true
-
-    echo -e "${BLUE}🔗 Verknüpfe deutsches Installer-Theme...${NC}"
-    composer config repositories.installer-de vcs https://github.com/nodedropweb/drupal_cms_installer_de
-
-    echo -e "${BLUE}🎨 Füge deutsches Theme hinzu...${NC}"
-    composer require drupal/drupal_cms_installer_de:dev-master --no-interaction
 
     echo -e "${BLUE}🧩 Füge Zusatzmodule hinzu (pb_localizer, yoast_seo_i18n, default_content_locale)...${NC}"
     composer require --no-interaction \
@@ -35,7 +49,6 @@ apply_installer_de() {
         drupal/default_content_locale:1.x-dev
 
     echo -e "${BLUE}🔧 Patche Installer-Konfiguration...${NC}"
-    # Wir rufen es direkt über PHP auf, falls die Composer-Verknüpfung im Vendor noch nicht sitzt
     php web/profiles/contrib/drupal_cms_installer_de/scripts/theme-fix.php
 
     echo -e "${BLUE}🧬 Bindet i18n_extras-Rezept in die Site-Template-Auswahl ein...${NC}"
@@ -43,19 +56,13 @@ apply_installer_de() {
 }
 
 
-# Entfernt das deutsche Installer-Theme wieder aus composer.json, sobald sein
-# einziger Zweck (den Installer-Wizard einmalig beschriften) erledigt ist.
-# Grund: "composer require drupal/drupal_cms_installer_de" in
-# apply_installer_de() traegt das Paket dauerhaft ein, nicht nur fuer die
-# Installationsroutine. Jede spaetere Composer-Operation - auch Project
-# Browsers UI-Install ueber Package Manager, das als www-data ohne
-# GitHub-Zugangsdaten laeuft - muss dann das VCS-Repository kontaktieren und
-# schlaegt mit einem Host-Key- oder Auth-Fehler fehl, obwohl das eigentlich
-# angeforderte Paket damit nichts zu tun hat.
+# Entfernt das deutsche Installer-Theme wieder, sobald sein einziger Zweck
+# (den Installer-Wizard einmalig beschriften) erledigt ist. Da apply_installer_de()
+# das Theme nicht mehr ueber Composer eintraegt, reicht dafuer ein einfaches
+# Loeschen des Ordners - composer.json ist ohnehin nie betroffen.
 cleanup_installer_de() {
     echo -e "${BLUE}🧹 Entferne deutsches Installer-Theme wieder (nicht mehr benötigt)...${NC}"
-    composer remove drupal/drupal_cms_installer_de --no-interaction
-    composer config --unset repositories.installer-de
+    rm -rf web/profiles/contrib/drupal_cms_installer_de
 }
 
 echo -e "${BLUE}🚀 Drupal CMS Installer – deutsches Theme${NC}"
@@ -73,9 +80,7 @@ if [ -f "composer.json" ] && [ -d "web/profiles/contrib/drupal_cms_installer" ];
     if [ -f "web/sites/default/settings.php" ]; then
         echo -e "${YELLOW}📂 Diese Seite ist bereits fertig installiert.${NC}"
         cleanup_installer_de
-        echo -e "${GREEN}✅ Fertig! Das deutsche Installer-Theme wurde entfernt (keine dauerhafte${NC}"
-        echo -e "${GREEN}   Abhängigkeit mehr, kein Composer-Zugriff auf GitHub bei künftigen${NC}"
-        echo -e "${GREEN}   Modul-Installationen).${NC}"
+        echo -e "${GREEN}✅ Fertig! Das deutsche Installer-Theme wurde entfernt.${NC}"
         exit 0
     fi
 
