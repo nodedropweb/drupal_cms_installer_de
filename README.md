@@ -127,6 +127,7 @@ The default Drupal CMS installer is currently hardcoded for English. This packag
 ### Compatibility: Drupal CMS 2.2
 
 Tested with Drupal CMS **2.2.0** (`drupal/drupal_cms_installer` 2.2.0, Drupal core 11.4); 2.1.x is still supported.
+All changes, with their purpose explained, are listed in the [CHANGELOG](CHANGELOG.md#220--adaptation-to-drupal-cms-22).
 The 2.2 installer removed `RecipeHandler`, so the i18n_extras hook now patches `drupal_cms_installer.profile`
 (both for local and Composer-downloaded site templates). The new dialog-based language switcher includes
 SVGs via `active_theme_path()`, so this theme's `images/` were synced with 2.2 (adding `check.svg` and
