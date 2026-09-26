@@ -42,10 +42,10 @@ NC='\033[0m'
 #   TypeError: EscaperRuntime::escape(): Argument #4 ($autoescape) must be of
 #   type bool, null given
 # Da "composer install" ohne Lock-Datei immer die neueste Twig-Version zieht,
-# trifft das jede Neuinstallation. Workaround: Twig 3.30.x per "conflict"
-# ausschliessen (nur wenn sie tatsaechlich installiert ist). Den Eintrag
-# "conflict.twig/twig" in composer.json wieder entfernen, sobald Drupal Core
-# mit Twig 3.30 kompatibel ist.
+# trifft das jede Neuinstallation. Workaround: Twig auf < 3.30 begrenzen (nur
+# wenn 3.30.x tatsaechlich installiert ist). Die Anforderung "twig/twig" in
+# composer.json wieder entfernen ("composer remove twig/twig"), sobald Drupal
+# Core mit Twig 3.30 kompatibel ist.
 fix_twig_escaper() {
     local twig_version
     twig_version=$(composer show twig/twig --format=json 2>/dev/null \
@@ -53,8 +53,7 @@ fix_twig_escaper() {
     case "$twig_version" in
         3.30.*)
             echo -e "${YELLOW}🩹 Twig $twig_version ist inkompatibel mit Drupal Core - stufe auf 3.29 zurück...${NC}"
-            composer config conflict.twig/twig ">=3.30.0 <3.31.0"
-            composer update twig/twig twig/html-extra --with-all-dependencies --no-interaction
+            composer require --no-interaction --with-all-dependencies "twig/twig:>=3.28 <3.30"
             ;;
     esac
 }
