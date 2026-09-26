@@ -69,10 +69,12 @@ ein **bereits per Composer installiertes** Drupal-CMS-Projekt nachträglich patc
   an `web/profiles/contrib/drupal_cms_installer` und bindet das deutsche Theme direkt dort ein,
   statt ein neues, ungenutztes Projekt anzulegen.
 
-  Wichtig: Ist die Seite bereits fertig installiert (es existiert schon eine
-  `web/sites/default/settings.php`), hat der Patch keinen sichtbaren Effekt auf die laufende
+  Wichtig: Ist die Seite bereits fertig installiert (geprüft per `drush status`, nicht über die
+  bloße Existenz von `settings.php`), hat der Patch keinen sichtbaren Effekt auf die laufende
   Seite — der Installer-Theme-Fix greift nur bei einem (erneuten) Aufruf von `core/install.php`.
-  In diesem Fall entfernt das Script den Theme-Ordner stattdessen automatisch wieder.
+  In diesem Fall entfernt das Script den Theme-Ordner stattdessen automatisch wieder und setzt
+  `drupal_cms_installer.info.yml` auf das Original-Theme zurück. Wurde die Datenbank später
+  geleert (z. B. `drush sql:drop`), erkennt das Script das und spielt das Theme erneut ein.
 
 > ℹ️ **Kein Composer-Eintrag**: `drupal_cms_installer_de` ist kein echtes drupal.org-Projekt und
 > wird deshalb bewusst **nicht** per `composer require` eingebunden — das Script lädt die Dateien
@@ -82,9 +84,9 @@ ein **bereits per Composer installiertes** Drupal-CMS-Projekt nachträglich patc
 > `composer`-Operationen (z. B. Project Browsers UI-Install über Package Manager) mit einem
 > Host-Key- oder Auth-Fehler zum Absturz bringen könnte. Nur die echten drupal.org-Zusatzmodule
 > (`pb_localizer`, `yoast_seo_i18n`, `default_content_locale`) landen regulär in `composer.json`.
-> Führe `installer_de_patch.sh` **ein zweites Mal** im selben Verzeichnis aus, sobald
-> `web/sites/default/settings.php` existiert — das Script erkennt das automatisch und entfernt
-> den Theme-Ordner wieder, da er nach der Ersteinrichtung ohnehin inaktiv ist.
+> Führe `installer_de_patch.sh` **ein zweites Mal** im selben Verzeichnis aus, sobald die
+> Installation abgeschlossen ist — das Script erkennt das automatisch, entfernt den Theme-Ordner
+> wieder (nach der Ersteinrichtung ist er ohnehin inaktiv) und setzt den Installer zurück.
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/nodedropweb/drupal_cms_installer_de/master/installer_de_patch.sh | bash
@@ -137,10 +139,12 @@ The script automatically detects whether to install a **fresh** Drupal CMS or pa
   `web/profiles/contrib/drupal_cms_installer` and wires the German theme in directly, instead
   of creating a new, unused project.
 
-  Note: if the site is already fully installed (a `web/sites/default/settings.php` already
-  exists), the patch has no visible effect on the running site — the installer theme fix only
-  applies the next time `core/install.php` runs. In that case the script instead automatically
-  removes the theme folder again.
+  Note: if the site is already fully installed (checked via `drush status`, not merely by the
+  presence of `settings.php`), the patch has no visible effect on the running site — the
+  installer theme fix only applies the next time `core/install.php` runs. In that case the
+  script instead removes the theme folder and restores the original theme in
+  `drupal_cms_installer.info.yml`. If the database is emptied later (e.g. `drush sql:drop`),
+  the script detects that and wires the theme in again.
 
 > ℹ️ **No composer entry**: `drupal_cms_installer_de` isn't a real drupal.org project, so it's
 > deliberately **not** installed via `composer require` — the script instead downloads it
@@ -150,9 +154,9 @@ The script automatically detects whether to install a **fresh** Drupal CMS or pa
 > (e.g. Project Browser's UI install via Package Manager) fail with a host-key or auth error.
 > Only the real drupal.org add-on modules (`pb_localizer`, `yoast_seo_i18n`,
 > `default_content_locale`) go into `composer.json` as usual.
-> Run `installer_de_patch.sh` a **second time** in the same directory once
-> `web/sites/default/settings.php` exists — the script detects that automatically and removes
-> the theme folder again, since it's inert after the initial setup anyway.
+> Run `installer_de_patch.sh` a **second time** in the same directory once the installation is
+> finished — the script detects that automatically, removes the theme folder again (it's inert
+> after the initial setup anyway) and restores the installer.
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/nodedropweb/drupal_cms_installer_de/master/installer_de_patch.sh | bash

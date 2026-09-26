@@ -148,9 +148,8 @@ if [ -f "composer.json" ] && [ -d "web/profiles/contrib/drupal_cms_installer" ];
     apply_installer_de
 
     echo -e "${GREEN}✅ Fertig! Das deutsche Installer-Theme ist jetzt eingebunden.${NC}"
-    echo -e "${YELLOW}ℹ️ Führe dieses Skript nach Abschluss des Installer-Wizards (Installation${NC}"
-    echo -e "${YELLOW}   abgeschlossen) im selben Verzeichnis erneut${NC}"
-    echo -e "${YELLOW}   aus, um das Theme automatisch wieder zu entfernen.${NC}"
+    echo -e "${YELLOW}ℹ️ Führe dieses Skript nach Abschluss des Installer-Wizards im selben${NC}"
+    echo -e "${YELLOW}   Verzeichnis erneut aus, um das Theme automatisch wieder zu entfernen.${NC}"
     exit 0
 fi
 
@@ -174,6 +173,5 @@ apply_installer_de
 
 echo -e "${GREEN}✅ Fertig! Drupal CMS wurde in den Ordner '$TARGET_DIR' installiert.${NC}"
 echo -e "${GREEN}Du kannst jetzt deinen Webserver auf $(pwd)/web zeigen lassen.${NC}"
-echo -e "${YELLOW}ℹ️ Führe dieses Skript nach Abschluss des Installer-Wizards (Installation${NC}"
-echo -e "${YELLOW}   abgeschlossen) im Ordner${NC}"
+echo -e "${YELLOW}ℹ️ Führe dieses Skript nach Abschluss des Installer-Wizards im Ordner${NC}"
 echo -e "${YELLOW}   '$TARGET_DIR' erneut aus, um das Theme automatisch wieder zu entfernen.${NC}"
