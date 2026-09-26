@@ -30,6 +30,26 @@ Was sich im Installer 2.2 geändert hat und wie dieses Paket darauf reagiert:
 | Der `langcode`-Parameter kann nach der Template-Wahl auf die Standardsprache des Templates wechseln | Sprache wird in der frühen Installer-Phase gemerkt (`js/langcode.js`), damit die Übersetzungen danach nicht abbrechen. |
 | Neue Zwischenseite „Your site is almost ready" mit Spinner | Übersetzt und im Dark Mode angepasst. |
 
+### Vorlagen-Inhalte auf Deutsch (Default Content Locale)
+
+`installer_de_patch.sh` installiert `drupal/default_content_locale:1.x-dev@dev`. Das Modul bringt
+Übersetzungen für die Standardinhalte von Vorlagen mit (z. B. `translations/haven.de.po`), damit
+z. B. **Haven** direkt nach der Installation deutsch ist. Damit das funktioniert, passt das Skript
+den Installer an drei Stellen an:
+
+* **Zeitpunkt** (`scripts/i18n-extras-fix.php`): Das Modul muss aktiv sein, *bevor* die Inhalte der
+  Vorlage importiert werden. Deshalb wird es direkt vor jedem Inhaltsimport installiert, das
+  Canvas-Untermodul `default_content_locale_canvas` sobald Canvas aktiv ist. Im i18n_extras-Rezept,
+  das erst nach der Vorlage läuft, käme es zu spät.
+* **Modulfehler** (`scripts/default-content-locale-fix.php`): Die 1.x-dev-Version legt Übersetzungen
+  ohne Pflichtfelder an, und die Installation bricht mit `Column 'status' cannot be null` ab.
+  Außerdem bliebe eine verwaiste englische Fassung zurück, sodass jeder Inhalt doppelt erscheint.
+  Die Korrektur ersetzt auf einsprachigen Seiten die englischen Werte direkt. Sobald das Modul den
+  Fehler selbst behebt, greift der Patch nicht mehr.
+* **URL-Aliase**: Vorlagen wie Haven und Byte liefern Aliase wie `/home` fest als Englisch. Auf einer
+  deutschen Seite lieferte die Startseite deshalb 404. Die Aliase werden jetzt auf die
+  Installationssprache umgestellt.
+
 > ⚠️ **Twig 3.30**: Twig 3.30.0 (25.09.2026) ist mit Drupal Core 11.4 inkompatibel. Schon die erste
 > Installer-Seite bricht dann ab mit `EscaperRuntime::escape(): Argument #4 ($autoescape) must be of
 > type bool, null given`. Ist Twig 3.30.x installiert, begrenzt `installer_de_patch.sh` Twig deshalb
