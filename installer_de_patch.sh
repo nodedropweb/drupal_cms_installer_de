@@ -34,6 +34,31 @@ NC='\033[0m'
 # NICHT ueber Composer eingebunden, sondern direkt per "git clone" an die
 # Stelle gelegt, an der Drupal Erweiterungen ohnehin automatisch findet
 # (web/profiles/*) - composer.json bleibt dabei komplett unangetastet.
+# Twig 3.30.0 (2026-09-25) holt den Escaper jetzt einmal pro Template und ruft
+# ihn beim Auto-Escaping direkt auf ("$this->escaper->escape"). Drupal Core
+# (getestet: 11.4.7) biegt den escape-Filter aber per TwigNodeVisitor auf
+# seinen eigenen "drupal_escape"-Filter mit anderer Signatur um - das Ergebnis
+# ist schon auf der ersten Installer-Seite:
+#   TypeError: EscaperRuntime::escape(): Argument #4 ($autoescape) must be of
+#   type bool, null given
+# Da "composer install" ohne Lock-Datei immer die neueste Twig-Version zieht,
+# trifft das jede Neuinstallation. Workaround: Twig 3.30.x per "conflict"
+# ausschliessen (nur wenn sie tatsaechlich installiert ist). Den Eintrag
+# "conflict.twig/twig" in composer.json wieder entfernen, sobald Drupal Core
+# mit Twig 3.30 kompatibel ist.
+fix_twig_escaper() {
+    local twig_version
+    twig_version=$(composer show twig/twig --format=json 2>/dev/null \
+        | php -r '$j = json_decode(stream_get_contents(STDIN), true); echo ltrim($j["versions"][0] ?? "", "v");')
+    case "$twig_version" in
+        3.30.*)
+            echo -e "${YELLOW}🩹 Twig $twig_version ist inkompatibel mit Drupal Core - stufe auf 3.29 zurück...${NC}"
+            composer config conflict.twig/twig ">=3.30.0 <3.31.0"
+            composer update twig/twig twig/html-extra --with-all-dependencies --no-interaction
+            ;;
+    esac
+}
+
 apply_installer_de() {
     echo -e "${BLUE}🎨 Lade deutsches Installer-Theme (ohne Composer, damit composer.json${NC}"
     echo -e "${BLUE}   unangetastet bleibt und der Project Browser nicht bricht)...${NC}"
@@ -53,6 +78,8 @@ apply_installer_de() {
         drupal/pb_localizer:^3.0 \
         drupal/yoast_seo_i18n:^1.0 \
         drupal/default_content_locale:1.x-dev
+
+    fix_twig_escaper
 
     echo -e "${BLUE}🔧 Patche Installer-Konfiguration...${NC}"
     php web/profiles/contrib/drupal_cms_installer_de/scripts/theme-fix.php
