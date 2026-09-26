@@ -68,15 +68,18 @@ apply_installer_de() {
         web/profiles/contrib/drupal_cms_installer_de
     rm -rf web/profiles/contrib/drupal_cms_installer_de/.git
 
-    echo -e "${BLUE}⚙️ Erlaube Entwicklungs-Versionen (dev)...${NC}"
-    composer config minimum-stability dev
-    composer config prefer-stable true
-
+    # default_content_locale gibt es nur als Dev-Version. Das Stability-Flag
+    # "@dev" erlaubt das gezielt fuer dieses eine Paket, statt die
+    # minimum-stability des ganzen Projekts auf "dev" zu senken.
+    # Das Modul uebersetzt die Standardinhalte der Vorlage (z. B. Haven) beim
+    # Import; eingebunden wird es von scripts/i18n-extras-fix.php direkt vor
+    # dem Inhaltsimport der Vorlage (siehe dort).
     echo -e "${BLUE}🧩 Füge Zusatzmodule hinzu (pb_localizer, yoast_seo_i18n, default_content_locale)...${NC}"
+    composer config prefer-stable true
     composer require --no-interaction \
         drupal/pb_localizer:^3.0 \
         drupal/yoast_seo_i18n:^1.0 \
-        drupal/default_content_locale:1.x-dev
+        "drupal/default_content_locale:1.x-dev@dev"
 
     fix_twig_escaper
 
