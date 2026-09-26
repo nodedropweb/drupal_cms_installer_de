@@ -7,6 +7,12 @@ set -e
 #   curl -sSL .../installer_de_patch.sh | bash -s -- drupalcms
 TARGET_DIR="${1:-cms}"
 
+# Quelle des deutschen Installer-Themes. Per Default der master-Branch auf
+# GitHub; zum Testen eines Branches oder lokalen Klons überschreibbar:
+#   INSTALLER_DE_REPO=/pfad/zum/klon INSTALLER_DE_BRANCH=mein-branch bash installer_de_patch.sh
+INSTALLER_DE_REPO="${INSTALLER_DE_REPO:-https://github.com/nodedropweb/drupal_cms_installer_de.git}"
+INSTALLER_DE_BRANCH="${INSTALLER_DE_BRANCH:-master}"
+
 # Farben für die Ausgabe
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
@@ -33,8 +39,8 @@ apply_installer_de() {
     echo -e "${BLUE}   unangetastet bleibt und der Project Browser nicht bricht)...${NC}"
     rm -rf web/profiles/contrib/drupal_cms_installer_de
     mkdir -p web/profiles/contrib
-    git clone --quiet --depth 1 --single-branch --branch master \
-        https://github.com/nodedropweb/drupal_cms_installer_de.git \
+    git clone --quiet --depth 1 --single-branch --branch "$INSTALLER_DE_BRANCH" \
+        "$INSTALLER_DE_REPO" \
         web/profiles/contrib/drupal_cms_installer_de
     rm -rf web/profiles/contrib/drupal_cms_installer_de/.git
 
