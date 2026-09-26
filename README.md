@@ -20,6 +20,7 @@ Dieses Paket greift in die Erstinsalltion im Webbrowser ein, sobald "Deutsch" al
 ### Kompatibilität: Drupal CMS 2.2
 
 Getestet mit Drupal CMS **2.2.0** (`drupal/drupal_cms_installer` 2.2.0, Drupal Core 11.4); 2.1.x wird weiterhin unterstützt.
+Alle Änderungen mit Sinn und Zweck stehen im [CHANGELOG](CHANGELOG.md).
 Was sich im Installer 2.2 geändert hat und wie dieses Paket darauf reagiert:
 
 | Änderung in 2.2 | Anpassung hier |
