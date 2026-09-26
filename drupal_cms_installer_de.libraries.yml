@@ -15,9 +15,13 @@ installer-translations:
 progress-override:
   js:
     js/progress-override.js: {}
+  # Bewusst KEINE Abhaengigkeit auf core/drupal.progress: Diese Bibliothek
+  # erweitert (ueber drupal_cms_installer_theme/drupal.progress) ohnehin
+  # core/drupal.progress und laedt deshalb nach progress.js. Eine zusaetzliche
+  # Abhaengigkeit erzeugt einen Kreis und bricht den Installer mit
+  # "Allowed memory size exhausted" im LibraryDependencyResolver ab.
   dependencies:
     - core/drupal
-    - core/drupal.progress
     - drupal_cms_installer_de/langcode
 
 dark-mode:
