@@ -90,11 +90,34 @@ apply_installer_de() {
 
 # Entfernt das deutsche Installer-Theme wieder, sobald sein einziger Zweck
 # (den Installer-Wizard einmalig beschriften) erledigt ist. Da apply_installer_de()
-# das Theme nicht mehr ueber Composer eintraegt, reicht dafuer ein einfaches
-# Loeschen des Ordners - composer.json ist ohnehin nie betroffen.
+# das Theme nicht mehr ueber Composer eintraegt, reicht dafuer das Loeschen des
+# Ordners - composer.json ist ohnehin nie betroffen.
+#
+# Wichtig: Der Theme-Patch in drupal_cms_installer.info.yml MUSS dabei
+# zurueckgesetzt werden. Sonst verweist der Installer weiter auf das geloeschte
+# Theme, und jede spaetere Neuinstallation (z. B. nach "drush sql:drop") bricht
+# ab mit "Call to a member function getPathname() on null in
+# InstallerKernel->getBaseThemes()". Der i18n_extras-Patch im .profile darf
+# bleiben: er prueft selbst, ob das Rezept noch existiert.
 cleanup_installer_de() {
     echo -e "${BLUE}🧹 Entferne deutsches Installer-Theme wieder (nicht mehr benötigt)...${NC}"
     rm -rf web/profiles/contrib/drupal_cms_installer_de
+    local info=web/profiles/contrib/drupal_cms_installer/drupal_cms_installer.info.yml
+    if [ -f "$info" ] && grep -q 'theme: drupal_cms_installer_de' "$info"; then
+        sed -i 's/theme: drupal_cms_installer_de$/theme: drupal_cms_installer_theme/' "$info"
+        echo -e "${BLUE}↩️  Installer-Theme in drupal_cms_installer.info.yml zurückgesetzt.${NC}"
+    fi
+}
+
+# Prueft, ob Drupal tatsaechlich installiert ist. Eine vorhandene settings.php
+# reicht dafuer nicht: nach "drush sql:drop" existiert sie weiter, die
+# Datenbank ist aber leer und core/install.php laeuft erneut.
+site_is_installed() {
+    if [ -x vendor/bin/drush ]; then
+        [ "$(vendor/bin/drush status --field=bootstrap 2>/dev/null)" = "Successful" ]
+    else
+        [ -f web/sites/default/settings.php ]
+    fi
 }
 
 echo -e "${BLUE}🚀 Drupal CMS Installer – deutsches Theme${NC}"
@@ -105,11 +128,11 @@ echo -e "${BLUE}🚀 Drupal CMS Installer – deutsches Theme${NC}"
 # "composer create-project" ausführen (das würde ein zweites, ungenutztes
 # Projekt in einem Unterordner "cms" anlegen).
 if [ -f "composer.json" ] && [ -d "web/profiles/contrib/drupal_cms_installer" ]; then
-    # Fall A2: Die Seite ist bereits fertig installiert (settings.php
-    # existiert) - der Patch greift ohnehin nur beim Aufruf von
+    # Fall A2: Die Seite ist bereits fertig installiert (siehe
+    # site_is_installed()) - der Patch greift ohnehin nur beim Aufruf von
     # core/install.php, das ist hier längst gelaufen. Erneutes Anwenden
     # wäre wirkungslos; stattdessen aufräumen, siehe cleanup_installer_de().
-    if [ -f "web/sites/default/settings.php" ]; then
+    if site_is_installed; then
         echo -e "${YELLOW}📂 Diese Seite ist bereits fertig installiert.${NC}"
         cleanup_installer_de
         echo -e "${GREEN}✅ Fertig! Das deutsche Installer-Theme wurde entfernt.${NC}"
@@ -117,15 +140,16 @@ if [ -f "composer.json" ] && [ -d "web/profiles/contrib/drupal_cms_installer" ];
     fi
 
     # Fall A1: Composer-Projekt existiert, aber der Installer-Wizard wurde
-    # noch nicht durchlaufen - Patch wie gewohnt anwenden.
+    # noch nicht durchlaufen (oder die Datenbank wurde geleert) - Patch wie
+    # gewohnt anwenden.
     echo -e "${YELLOW}📂 Bestehende Drupal-CMS-Installation im aktuellen Verzeichnis erkannt.${NC}"
     echo -e "${BLUE}🔧 Wende das deutsche Installer-Theme nachträglich an...${NC}"
 
     apply_installer_de
 
     echo -e "${GREEN}✅ Fertig! Das deutsche Installer-Theme ist jetzt eingebunden.${NC}"
-    echo -e "${YELLOW}ℹ️ Führe dieses Skript nach Abschluss des Installer-Wizards (sobald${NC}"
-    echo -e "${YELLOW}   web/sites/default/settings.php existiert) im selben Verzeichnis erneut${NC}"
+    echo -e "${YELLOW}ℹ️ Führe dieses Skript nach Abschluss des Installer-Wizards (Installation${NC}"
+    echo -e "${YELLOW}   abgeschlossen) im selben Verzeichnis erneut${NC}"
     echo -e "${YELLOW}   aus, um das Theme automatisch wieder zu entfernen.${NC}"
     exit 0
 fi
@@ -150,6 +174,6 @@ apply_installer_de
 
 echo -e "${GREEN}✅ Fertig! Drupal CMS wurde in den Ordner '$TARGET_DIR' installiert.${NC}"
 echo -e "${GREEN}Du kannst jetzt deinen Webserver auf $(pwd)/web zeigen lassen.${NC}"
-echo -e "${YELLOW}ℹ️ Führe dieses Skript nach Abschluss des Installer-Wizards (sobald${NC}"
-echo -e "${YELLOW}   $TARGET_DIR/web/sites/default/settings.php existiert) im Ordner${NC}"
+echo -e "${YELLOW}ℹ️ Führe dieses Skript nach Abschluss des Installer-Wizards (Installation${NC}"
+echo -e "${YELLOW}   abgeschlossen) im Ordner${NC}"
 echo -e "${YELLOW}   '$TARGET_DIR' erneut aus, um das Theme automatisch wieder zu entfernen.${NC}"
