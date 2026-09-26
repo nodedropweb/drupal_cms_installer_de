@@ -75,6 +75,7 @@
       'MySQL, MariaDB, oder equivalent': 'MySQL, MariaDB oder kompatibel',
       'MySQL, MariaDB, oder equivalent über mysqli (experimentell)': 'MySQL, MariaDB oder kompatibel über mysqli (experimentell)',
       'MySQL, MariaDB, or equivalent': 'MySQL, MariaDB oder kompatibel',
+      'Initializing.': 'Initialisierung.',
     },
   };
 

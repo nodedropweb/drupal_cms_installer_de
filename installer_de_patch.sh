@@ -86,8 +86,11 @@ apply_installer_de() {
     echo -e "${BLUE}🔧 Patche Installer-Konfiguration...${NC}"
     php web/profiles/contrib/drupal_cms_installer_de/scripts/theme-fix.php
 
-    echo -e "${BLUE}🧬 Bindet i18n_extras-Rezept in die Site-Template-Auswahl ein...${NC}"
+    echo -e "${BLUE}🧬 Bindet i18n_extras-Rezept und Default Content Locale in den Installer ein...${NC}"
     php web/profiles/contrib/drupal_cms_installer_de/scripts/i18n-extras-fix.php
+
+    echo -e "${BLUE}🌍 Korrigiert default_content_locale (Vorlagen-Inhalte auf Deutsch)...${NC}"
+    php web/profiles/contrib/drupal_cms_installer_de/scripts/default-content-locale-fix.php
 }
 
 
