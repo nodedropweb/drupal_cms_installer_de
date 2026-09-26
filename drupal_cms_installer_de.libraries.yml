@@ -17,6 +17,7 @@ progress-override:
     js/progress-override.js: {}
   dependencies:
     - core/drupal
+    - core/drupal.progress
     - drupal_cms_installer_de/langcode
 
 dark-mode:

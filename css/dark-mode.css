@@ -245,6 +245,21 @@
     background-color: rgba(11, 23, 48, .85);
   }
 
+  /*
+   * Lizenzschlüssel-Dialog der Premium-Vorlagen: ohne eigene Hintergrundfarbe
+   * bekäme er das Browser-Schwarz, und der Backdrop nutzt --gin-tooltip-bg,
+   * das hier auf ein helles Navy-Blau gemappt ist.
+   */
+  .license-dialog {
+    background-color: var(--gin-bg-layer);
+    color: var(--gin-color-text);
+    border: 1px solid var(--gin-border-color);
+  }
+
+  .license-dialog::backdrop {
+    background-color: var(--gin-bg-layer4);
+  }
+
   /* Abschlussseite "Your site is almost ready" (neu in 2.2). */
   .cms-installer__finishing-spinner {
     border-color: var(--gin-bg-layer3);

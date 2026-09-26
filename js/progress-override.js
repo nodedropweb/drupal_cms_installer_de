@@ -37,4 +37,60 @@
     `;
   };
 
+  /**
+   * Übersetzungen für die Statusmeldungen der Installations-Batches.
+   *
+   * Während der Site-Template-Batch läuft, wird das Locale-Modul installiert,
+   * die deutschen Core-Übersetzungen werden aber erst ganz am Ende importiert.
+   * Dazwischen kommen die Meldungen von RecipeRunner und Batch-API deshalb auf
+   * Englisch an ("Installed 20 modules: …", "Completed 3 of 22."), obwohl es
+   * für die meisten eine offizielle Übersetzung gibt. Die Meldungen enthalten
+   * HTML (<em class="placeholder">…</em>), die Muster lassen es unangetastet.
+   *
+   * Reihenfolge ist wichtig: spezifische Muster vor dem allgemeinen
+   * "Installed @name" des Drupal-CMS-Installers.
+   */
+  const progressPatterns = {
+    de: [
+      [/^Completed (\d+) of (\d+)\.$/, '$1 von $2 abgeschlossen.'],
+      [/^Installed (\d+) modules: (.+?)\.?$/, '$1 Module installiert: $2.'],
+      [/^Installed (.+) module\.$/, 'Modul $1 installiert.'],
+      [/^Installed (.+) modules\.$/, 'Module $1 installiert.'],
+      [/^Installed (.+) theme\.$/, 'Theme $1 installiert.'],
+      [/^Installed configuration for (.+) recipe\.$/, 'Konfiguration des Rezepts $1 installiert.'],
+      [/^Created content for (.+) recipe\.$/, 'Inhalt für das Rezept $1 erstellt.'],
+      [/^Applied (.+) recipe\.$/, 'Rezept $1 angewendet.'],
+      [/^Installing (.+)\. This may take a few minutes\.$/, '$1 wird installiert. Dies kann einige Minuten dauern.'],
+      [/^Installed (.+)$/, '$1 installiert'],
+      [/^Initializing\.$/, 'Initialisierung.'],
+    ],
+  };
+
+  function translateProgress(text) {
+    const list = progressPatterns[Drupal.installerDe.getLangcode()];
+    if (!list || typeof text !== 'string') {
+      return text;
+    }
+    const trimmed = text.trim();
+    for (const [pattern, replacement] of list) {
+      if (pattern.test(trimmed)) {
+        return trimmed.replace(pattern, replacement);
+      }
+    }
+    return text;
+  }
+
+  // progress.js ist über die Bibliotheks-Abhängigkeit bereits geladen.
+  if (Drupal.ProgressBar && Drupal.ProgressBar.prototype.setProgress) {
+    const _originalSetProgress = Drupal.ProgressBar.prototype.setProgress;
+    Drupal.ProgressBar.prototype.setProgress = function (percentage, message, label) {
+      return _originalSetProgress.call(
+        this,
+        percentage,
+        translateProgress(message),
+        translateProgress(label),
+      );
+    };
+  }
+
 })(Drupal);

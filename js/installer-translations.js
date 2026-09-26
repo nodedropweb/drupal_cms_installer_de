@@ -71,6 +71,10 @@
       'Finishing installation.': 'Installation wird abgeschlossen.',
       'Free': 'Kostenlos',
       'Validating...': 'Wird überprüft …',
+      // Halb übersetzte Core-Strings (Datenbankschritt).
+      'MySQL, MariaDB, oder equivalent': 'MySQL, MariaDB oder kompatibel',
+      'MySQL, MariaDB, oder equivalent über mysqli (experimentell)': 'MySQL, MariaDB oder kompatibel über mysqli (experimentell)',
+      'MySQL, MariaDB, or equivalent': 'MySQL, MariaDB oder kompatibel',
     },
   };
 
@@ -178,6 +182,17 @@
       once('installer-translations-body', 'body', context).forEach(
         (el) => translateSubtree(el, map, patternList)
       );
+
+      // Vorgabewert des Website-Namens: Die offizielle Übersetzung "Meine
+      // Drupal CMS Seite" passt nicht zur Überschrift, die von "Website"
+      // spricht. Nur ersetzen, solange der Nutzer nichts geändert hat.
+      if (langcode === 'de') {
+        once('installer-translations-site-name', 'input[name="site_name"]', context).forEach((input) => {
+          if (['My Drupal CMS site', 'Meine Drupal CMS Seite'].includes(input.value.trim())) {
+            input.value = 'Meine Drupal-CMS-Website';
+          }
+        });
+      }
 
       // Browser tab title.
       const title = translateString(document.title.split(' | ')[0].trim(), map, patternList);
