@@ -41,14 +41,20 @@
    */
   Drupal.installerDe.getLangcode = function () {
     const fromUrl = new URL(window.location.href).searchParams.get('langcode');
-    const stored = read();
-    const earlyInstaller = document.querySelector('.cms-installer__language-switcher') !== null;
 
-    if (fromUrl && (earlyInstaller || !stored)) {
-      write(fromUrl);
-      return fromUrl;
+    // Früher Installer: Der Sprachumschalter markiert die aktive Sprache mit
+    // .is-selected - das ist die verlässlichste Quelle (ohne ?langcode= in der
+    // URL installiert Drupal CMS auf Englisch). Immer neu merken, damit ein
+    // Wert aus einer früheren Installation im selben Tab nicht hängen bleibt.
+    if (document.querySelector('.cms-installer__language-switcher')) {
+      const selected = document.querySelector('.cms-installer__language-switcher-list a.is-selected');
+      const langcode = (selected && new URL(selected.href, window.location.href).searchParams.get('langcode'))
+        || fromUrl
+        || 'en';
+      write(langcode);
+      return langcode;
     }
-    return stored ?? fromUrl ?? 'en';
+    return read() ?? fromUrl ?? 'en';
   };
 
 })(Drupal);
