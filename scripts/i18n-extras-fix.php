@@ -59,6 +59,96 @@ if (file_exists($formFile) && str_contains(file_get_contents($formFile), '$this-
 else {
     patch_profile($profileFile, $ourRecipePath);
     patch_profile_content_locale($profileFile);
+    patch_profile_alias_langcodes($profileFile);
+}
+
+/**
+ * Drupal CMS 2.2+: URL-Aliase der Vorlagen-Inhalte auf die Installationssprache.
+ *
+ * Vorlagen wie Haven und Byte liefern Inhalte mit fest eingetragenem
+ * "path: [{alias: /home, langcode: en}]". Core importiert die Inhalte auf einer
+ * deutschen Installation zwar auf Deutsch, der Alias bleibt aber englisch -
+ * und greift auf einer Seite ohne Englisch nicht: Startseite (/home) und
+ * weitere Seiten liefern 404.
+ *
+ * Deshalb wird nach jeder installContent-Operation der Vorlage eine Operation
+ * eingefügt, die englische Aliase auf die gesperrte Installationssprache
+ * (config_language_lock) umstellt - aber nur, wenn Englisch am Ende nicht
+ * behalten wird (install_state profile_info keep_english).
+ */
+function patch_profile_alias_langcodes(string $file): void {
+    $content = file_get_contents($file);
+    $fixer = '_drupal_cms_installer_de_fix_alias_langcodes';
+
+    // Zusätzlich ganz am Ende (nach i18n_extras, also nach allen Schritten
+    // der Vorlage) ausführen: Bei der Startseite schreibt ein späteres
+    // Speichern den Alias sonst wieder mit dem "en" aus dem Feldwert zurück.
+    $i18nMarker = "    ['_drupal_cms_installer_mark_recipe_applied', [\$path]],\n  ];";
+    // Das Argument macht die Operation eindeutig: drupal_cms_installer_apply_recipes()
+    // verwirft identische Batch-Operationen ("Only do each recipe's batch
+    // operations once") - ohne Argument liefe die Korrektur nur ein einziges Mal.
+    $i18nInjected = "    ['_drupal_cms_installer_mark_recipe_applied', [\$path]],\n    ['$fixer', ['final']],\n  ];";
+    if (!str_contains($content, $i18nInjected) && substr_count($content, $i18nMarker) === 1) {
+        $content = str_replace($i18nMarker, $i18nInjected, $content);
+        file_put_contents($file, $content);
+    }
+
+    if (str_contains($content, "function $fixer(")) {
+        echo "\033[34mℹ️ Alias-Korrektur ist bereits in den Installer eingebunden.\033[0m\n";
+        return;
+    }
+
+    // Stelle im von patch_profile_content_locale() angelegten Wrapper.
+    $marker = "    \$result[] = \$operation;\n  }\n  return \$result;";
+    if (substr_count($content, $marker) !== 1) {
+        echo "\033[33m⚠️ Wrapper für die Alias-Korrektur nicht gefunden - URL-Aliase werden NICHT angepasst.\033[0m\n";
+        return;
+    }
+
+    $content = str_replace(
+        $marker,
+        "    \$result[] = \$operation;\n"
+        . "    // DE: Nach dem Inhaltsimport englische URL-Aliase umstellen.\n"
+        . "    // Eindeutiges Argument, sonst verwirft der Installer Wiederholungen.\n"
+        . "    if ((\$operation[0][1] ?? NULL) === 'installContent') {\n"
+        . "      \$result[] = ['$fixer', ['after-' . count(\$result)]];\n"
+        . "    }\n"
+        . "  }\n  return \$result;",
+        $content,
+    );
+
+    $content = rtrim($content) . "\n\n" . <<<PHP
+/**
+ * Batch operation: moves English URL aliases to the installation language.
+ *
+ * Added by drupal_cms_installer_de (scripts/i18n-extras-fix.php). Site
+ * templates ship aliases like "/home" hard-coded as English; on a site
+ * without English they never match and the pages return 404.
+ */
+function $fixer(string \$step = ''): void {
+  global \$install_state;
+  \$langcode = Drupal::config('config_language_lock.settings')->get('locked_langcode');
+  if (!\$langcode || \$langcode === 'en' || !empty(\$install_state['profile_info']['keep_english'])) {
+    return;
+  }
+  \$storage = Drupal::entityTypeManager()->getStorage('path_alias');
+  foreach (\$storage->loadByProperties(['langcode' => 'en']) as \$alias) {
+    \$duplicate = \$storage->loadByProperties([
+      'path' => \$alias->getPath(),
+      'langcode' => \$langcode,
+    ]);
+    if (\$duplicate) {
+      \$alias->delete();
+      continue;
+    }
+    \$alias->set('langcode', \$langcode)->save();
+  }
+}
+
+PHP;
+
+    file_put_contents($file, $content);
+    echo "\033[32m✅ URL-Aliase der Vorlage werden jetzt auf die Installationssprache umgestellt.\033[0m\n";
 }
 
 /**
@@ -120,8 +210,10 @@ function patch_profile_content_locale(string $file): void {
 function $wrapper(array \$operations): array {
   \$result = [];
   foreach (\$operations as \$operation) {
+    // Eindeutiges Argument, sonst verwirft der Installer Wiederholungen
+    // ("Only do each recipe's batch operations once").
     if ((\$operation[0][1] ?? NULL) === 'installContent') {
-      \$result[] = ['_drupal_cms_installer_de_install_content_locale', []];
+      \$result[] = ['_drupal_cms_installer_de_install_content_locale', ['before-' . count(\$result)]];
     }
     \$result[] = \$operation;
   }
@@ -134,7 +226,7 @@ function $wrapper(array \$operations): array {
  * Added by drupal_cms_installer_de (scripts/i18n-extras-fix.php). Does nothing
  * on English-only sites or when the modules are not in the code base.
  */
-function _drupal_cms_installer_de_install_content_locale(): void {
+function _drupal_cms_installer_de_install_content_locale(string \$step = ''): void {
   \$language_manager = Drupal::languageManager();
   if (\$language_manager->getDefaultLanguage()->getId() === 'en' && count(\$language_manager->getLanguages()) < 2) {
     return;
