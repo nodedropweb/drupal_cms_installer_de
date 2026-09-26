@@ -30,6 +30,18 @@ Was sich im Installer 2.2 geändert hat und wie dieses Paket darauf reagiert:
 | Der `langcode`-Parameter kann nach der Template-Wahl auf die Standardsprache des Templates wechseln | Sprache wird in der frühen Installer-Phase gemerkt (`js/langcode.js`), damit die Übersetzungen danach nicht abbrechen. |
 | Neue Zwischenseite „Your site is almost ready" mit Spinner | Übersetzt und im Dark Mode angepasst. |
 
+> ⚠️ **Twig 3.30**: Twig 3.30.0 (25.09.2026) ist mit Drupal Core 11.4 inkompatibel. Schon die erste
+> Installer-Seite bricht dann ab mit `EscaperRuntime::escape(): Argument #4 ($autoescape) must be of
+> type bool, null given`. Ist Twig 3.30.x installiert, begrenzt `installer_de_patch.sh` Twig deshalb
+> automatisch per `composer require "twig/twig:>=3.28 <3.30"`. Sobald Drupal Core das behoben hat,
+> lässt sich die Begrenzung mit `composer remove twig/twig` wieder entfernen.
+
+Zum Testen eines Branches oder lokalen Klons kann die Quelle des Themes überschrieben werden:
+
+```bash
+INSTALLER_DE_REPO=file:///pfad/zum/klon INSTALLER_DE_BRANCH=mein-branch bash installer_de_patch.sh
+```
+
 > ⚠️ Composer führt `post-install-cmd`/`post-update-cmd`-Scripts **nur aus dem Root-Package**
 > aus, nicht aus Abhängigkeiten. Der `theme-fix.php`-Patch wird also **nicht** automatisch bei
 > jedem `composer update` neu angewendet — ein Update von `drupal/drupal_cms_installer` kann
