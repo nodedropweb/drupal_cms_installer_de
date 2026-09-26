@@ -12,15 +12,6 @@
   };
 
   /**
-   * Returns the currently selected langcode from the URL, defaulting to 'en'.
-   *
-   * @return {string}
-   */
-  function getCurrentLangcode() {
-    return new URL(window.location.href).searchParams.get('langcode') ?? 'en';
-  }
-
-  /**
    * Override Drupal.theme.progressBar to inject a translated subhead.
    *
    * The original implementation is preserved for all non-translated languages.
@@ -29,7 +20,8 @@
   const _originalProgressBar = Drupal.theme.progressBar;
 
   Drupal.theme.progressBar = function (id) {
-    const langcode = getCurrentLangcode();
+    // @see js/langcode.js
+    const langcode = Drupal.installerDe.getLangcode();
     const subhead = progressSubheadTranslations[langcode]
       ?? 'This will only take a moment.'; // English fallback.
 

@@ -1,15 +1,23 @@
+langcode:
+  js:
+    js/langcode.js: {}
+  dependencies:
+    - core/drupal
+
 installer-translations:
   js:
     js/installer-translations.js: {}
   dependencies:
     - core/drupal
     - core/once
+    - drupal_cms_installer_de/langcode
 
 progress-override:
   js:
     js/progress-override.js: {}
   dependencies:
     - core/drupal
+    - drupal_cms_installer_de/langcode
 
 dark-mode:
   css:

@@ -5,7 +5,7 @@
     "license": [
         "GPL-2.0-or-later"
     ],
-    "version": "2.1.0",
+    "version": "2.2.0",
     "scripts": {
         "replace-installer-theme": [
             "@php scripts/theme-fix.php"

@@ -5,8 +5,15 @@
    * Translations for the Drupal CMS installer UI.
    *
    * Maps English strings (as they appear in the DOM) to their German
-   * equivalents. Translations are only applied when the URL contains
-   * `?langcode=de` (set by the installer's language-switcher.js).
+   * equivalents. Translations are only applied when German was chosen in the
+   * installer's language switcher (see js/langcode.js).
+   *
+   * Seit Drupal CMS 2.2 lädt der Installer selbst eine offizielle
+   * Übersetzungsdatei (drupal_cms_installer-2.2.x.de.po) von
+   * localize.drupal.org. Diese Liste deckt deshalb vor allem ab, was dort
+   * (noch) fehlt: die Beschreibungen der Site-Templates, neue 2.2-Strings
+   * (Sprachumschalter-Dialog, Abschlussseite) und einige Korrekturen an
+   * offiziellen Übersetzungen (z. B. "Frei", "Schluss machen").
    */
   const translations = {
     de: {
@@ -18,7 +25,7 @@
       'Created by Dripyard': 'Erstellt von Dripyard',
       'Created by Kanopi Studios': 'Erstellt von Kanopi Studios',
       'Created by QED42': 'Erstellt von QED42',
-      'License key': 'Lizenztschlüssel',
+      'License key': 'Lizenzschlüssel',
       'Created by Annertech': 'Erstellt von Annertech',
       'Created by Promet Source': 'Erstellt von Promet Source',
       'Created by OpenSense Labs': 'Erstellt von OpenSense Labs',
@@ -47,16 +54,61 @@
       'Designed for a conference or similar event that collects, moderates, and schedules user-submitted sessions. Features sections for events, sessions, articles (news), and sponsorships. Supports BOFs, jobs listings, personal schedules, webforms, and pages.': 'Entwickelt für eine Konferenz oder ähnliche Veranstaltung, die von Nutzern eingereichte Sessions sammelt, moderiert und terminiert. Bietet Bereiche für Veranstaltungen, Sessions, Artikel (News) und Sponsoring. Unterstützt BOFs, Stellenanzeigen, persönliche Zeitpläne, Webformulare und Seiten.',
       'A simple Nuxt frontend starter with Tailwind CSS that uses decoupled rendering via Lupus Decoupled.': 'Ein einfacher Nuxt-Frontend-Starter mit Tailwind CSS, der entkoppeltes Rendering über Lupus Decoupled nutzt.',
       'Nuxt repo': 'Nuxt-Repository',
+      // Neu in Drupal CMS 2.2: Sprachumschalter-Dialog.
+      'Change language': 'Sprache wechseln',
+      'Install your site in a different language': 'Website in einer anderen Sprache installieren',
+      'Search': 'Suchen',
+      'Close dialog': 'Dialog schließen',
+      'Downloading selected language': 'Ausgewählte Sprache wird heruntergeladen',
+      // Neu in Drupal CMS 2.2: Installationsschritte, Abschlussseite, Links.
+      'Name your site': 'Website benennen',
+      'Choose site template': 'Website-Vorlage auswählen',
+      'Setting up your site': 'Website wird eingerichtet',
+      'Finishing up': 'Abschluss',
+      'Schluss machen': 'Abschluss',
+      'Your site is almost ready': 'Die Website ist fast fertig',
+      'This will only take a moment.': 'Das dauert nur einen Moment.',
+      'Finishing installation.': 'Installation wird abgeschlossen.',
+      'Free': 'Kostenlos',
+      'Validating...': 'Wird überprüft …',
     },
   };
 
   /**
-   * Returns the currently selected langcode from the URL, defaulting to 'en'.
-   *
-   * @return {string}
+   * Pattern-based translations for strings with placeholders, which cannot be
+   * matched literally (e.g. the per-language aria-labels of the language
+   * switcher dialog introduced in Drupal CMS 2.2).
    */
-  function getCurrentLangcode() {
-    return new URL(window.location.href).searchParams.get('langcode') ?? 'en';
+  const patterns = {
+    de: [
+      [/^Select (.+) and close dialog$/, '$1 auswählen und Dialog schließen'],
+    ],
+  };
+
+  /**
+   * Attributes that carry user-facing text and are translated as well.
+   */
+  const ATTRIBUTES = ['aria-label', 'placeholder', 'title', 'alt'];
+
+  /**
+   * Returns the translation of a string, or NULL if there is none.
+   *
+   * @param {string} text
+   * @param {Object} map
+   * @param {Array} patternList
+   *
+   * @return {string|null}
+   */
+  function translateString(text, map, patternList) {
+    if (map[text]) {
+      return map[text];
+    }
+    for (const [pattern, replacement] of patternList) {
+      if (pattern.test(text)) {
+        return text.replace(pattern, replacement);
+      }
+    }
+    return null;
   }
 
   /**
@@ -64,26 +116,41 @@
    *
    * @param {Text} node
    * @param {Object} map - key/value pairs for the current language.
+   * @param {Array} patternList - [RegExp, replacement] pairs.
    */
-  function translateTextNode(node, map) {
+  function translateTextNode(node, map, patternList) {
     const trimmed = node.nodeValue.trim();
-    if (map[trimmed]) {
-      node.nodeValue = node.nodeValue.replace(trimmed, map[trimmed]);
+    const translated = trimmed && translateString(trimmed, map, patternList);
+    if (translated) {
+      node.nodeValue = node.nodeValue.replace(trimmed, translated);
     }
   }
 
   /**
-   * Walks all text nodes inside `root` and applies translations.
+   * Walks all text nodes and text attributes inside `root` and applies
+   * translations.
    *
    * @param {Element} root
    * @param {Object} map
+   * @param {Array} patternList
    */
-  function translateSubtree(root, map) {
+  function translateSubtree(root, map, patternList) {
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
     let node;
     while ((node = walker.nextNode())) {
-      translateTextNode(node, map);
+      translateTextNode(node, map, patternList);
     }
+
+    const selector = ATTRIBUTES.map((attribute) => `[${attribute}]`).join(',');
+    [root, ...root.querySelectorAll(selector)].forEach((el) => {
+      ATTRIBUTES.forEach((attribute) => {
+        const value = el.getAttribute && el.getAttribute(attribute);
+        const translated = value && translateString(value.trim(), map, patternList);
+        if (translated) {
+          el.setAttribute(attribute, translated);
+        }
+      });
+    });
   }
 
   /**
@@ -91,8 +158,10 @@
    */
   Drupal.behaviors.installerTranslations = {
     attach: function (context) {
-      const langcode = getCurrentLangcode();
+      // @see js/langcode.js
+      const langcode = Drupal.installerDe.getLangcode();
       const map = translations[langcode];
+      const patternList = patterns[langcode] ?? [];
 
       // Nothing to do if no translations are defined for this language.
       if (!map) {
@@ -101,14 +170,20 @@
 
       // Translate the page title (h1 / form legend / fieldset title).
       once('installer-translations-title', 'h1, legend, .fieldset-legend', context).forEach(
-        (el) => translateSubtree(el, map)
+        (el) => translateSubtree(el, map, patternList)
       );
 
       // Translate any remaining visible text that might contain our strings
       // (e.g., labels, headings rendered outside the above selectors).
       once('installer-translations-body', 'body', context).forEach(
-        (el) => translateSubtree(el, map)
+        (el) => translateSubtree(el, map, patternList)
       );
+
+      // Browser tab title.
+      const title = translateString(document.title.split(' | ')[0].trim(), map, patternList);
+      if (title) {
+        document.title = document.title.replace(document.title.split(' | ')[0].trim(), title);
+      }
     },
   };
 

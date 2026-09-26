@@ -15,6 +15,20 @@ Dieses Paket greift in die Erstinsalltion im Webbrowser ein, sobald "Deutsch" al
 * **Automatisches Theme-Patching**: Ein PHP-Script (`scripts/theme-fix.php`) passt die Konfiguration des Original-Installers (`drupal_cms_installer.info.yml`) automatisch an, um dieses Theme als Standard zu setzen.
 * **UI-Übersetzungen**: Über `js/installer-translations.js` werden englische Texte wie "Choose a site template" direkt im Browser durch deutsche Entsprechungen ersetzt.
 * **Fortschrittsanzeige**: Die Fortschrittsbalken werden via `js/progress-override.js` angepasst, um deutsche Statusmeldungen anzuzeigen.
+* **Zusatzmodule**: `scripts/i18n-extras-fix.php` sorgt dafür, dass das Rezept `recipes/i18n_extras` (pb_localizer, yoast_seo_i18n, default_content_locale, Gin-Darkmode „auto") direkt nach dem gewählten Site-Template angewendet wird.
+
+### Kompatibilität: Drupal CMS 2.2
+
+Getestet mit Drupal CMS **2.2.0** (`drupal/drupal_cms_installer` 2.2.0, Drupal Core 11.4); 2.1.x wird weiterhin unterstützt.
+Was sich im Installer 2.2 geändert hat und wie dieses Paket darauf reagiert:
+
+| Änderung in 2.2 | Anpassung hier |
+|---|---|
+| `RecipeHandler` entfernt; Rezepte werden nur noch in `drupal_cms_installer_apply_recipes()` bzw. `_drupal_cms_installer_require_recipe()` (im `.profile`) angewendet | `i18n-extras-fix.php` patcht jetzt das `.profile` an beiden Stellen; i18n_extras läuft damit auch bei per Composer nachgeladenen Templates garantiert **nach** dem Template. Fallback für 2.1.x bleibt erhalten. |
+| Neuer Sprachumschalter (Button + Dialog als SDC-Komponente statt `<select>` im Header), bindet `check.svg`, `x-circle.svg` u. a. über `active_theme_path()` ein | SVGs in `images/` auf 2.2 aktualisiert, `check.svg`/`search.svg` ergänzt (ohne sie bricht der Installer mit einem Twig-Fehler ab). Dark-Mode-Styles für Button, Dialog, Sprachliste und Lade-Overlay. |
+| Offizielle Installer-Übersetzung wird jetzt von localize.drupal.org geladen (`drupal_cms_installer-2.2.x.de.po`) | JS-Übersetzungen ergänzen nur noch, was dort fehlt (Template-Beschreibungen, neue Dialog-/Abschluss-Strings inkl. `aria-label`/`placeholder`), und korrigieren einzelne offizielle Übersetzungen. |
+| Der `langcode`-Parameter kann nach der Template-Wahl auf die Standardsprache des Templates wechseln | Sprache wird in der frühen Installer-Phase gemerkt (`js/langcode.js`), damit die Übersetzungen danach nicht abbrechen. |
+| Neue Zwischenseite „Your site is almost ready" mit Spinner | Übersetzt und im Dark Mode angepasst. |
 
 > ⚠️ Composer führt `post-install-cmd`/`post-update-cmd`-Scripts **nur aus dem Root-Package**
 > aus, nicht aus Abhängigkeiten. Der `theme-fix.php`-Patch wird also **nicht** automatisch bei
@@ -73,6 +87,17 @@ The default Drupal CMS installer is currently hardcoded for English. This packag
 * **Automatic Theme Patching**: A PHP script (`scripts/theme-fix.php`) automatically modifies the original installer's configuration (`drupal_cms_installer.info.yml`) to set this theme as the default.
 * **UI Translations**: Using `js/installer-translations.js`, English strings like "Choose a site template" are replaced with German equivalents directly in the browser.
 * **Progress Bar Override**: Customizes the progress bar via `js/progress-override.js` to display German status messages.
+* **Add-on modules**: `scripts/i18n-extras-fix.php` makes sure the `recipes/i18n_extras` recipe (pb_localizer, yoast_seo_i18n, default_content_locale, Gin dark mode "auto") is applied right after the chosen site template.
+
+### Compatibility: Drupal CMS 2.2
+
+Tested with Drupal CMS **2.2.0** (`drupal/drupal_cms_installer` 2.2.0, Drupal core 11.4); 2.1.x is still supported.
+The 2.2 installer removed `RecipeHandler`, so the i18n_extras hook now patches `drupal_cms_installer.profile`
+(both for local and Composer-downloaded site templates). The new dialog-based language switcher includes
+SVGs via `active_theme_path()`, so this theme's `images/` were synced with 2.2 (adding `check.svg` and
+`search.svg`, without which the installer fails with a Twig error), and dark-mode styles were added for it.
+Since 2.2 downloads an official German `.po` file for the installer, the JS translations now only fill the
+gaps (site template descriptions, new dialog/finishing strings incl. `aria-label`/`placeholder`).
 
 > ⚠️ Composer only runs `post-install-cmd`/`post-update-cmd` scripts from the **root package**,
 > never from dependencies. The `theme-fix.php` patch is therefore **not** re-applied

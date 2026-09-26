@@ -180,24 +180,75 @@
     color: var(--gin-color-text-light);
   }
 
-  /* Language switcher */
-  select.cms-installer__language-switcher {
-    color: var(--gin-color-text);
-    background-color: var(--gin-bg-app);
+  /*
+   * Sprachumschalter (seit Drupal CMS 2.2 ein Button mit Dialog statt eines
+   * <select> im Header). Das Upstream-CSS nutzt die hellen Claro-Töne
+   * --color-blue-100/-050 für Hover und Auswahl - auf Navy kaum lesbar.
+   * Die Icons (translate/chevron) werden über --icon-fill eingefärbt.
+   */
+  .cms-installer__language-switcher .button {
+    --icon-fill: currentColor;
+    color: var(--gin-color-primary-active);
+    background-color: transparent;
   }
 
-  select.cms-installer__language-switcher option {
+  .cms-installer__language-switcher .button:hover {
+    color: var(--gin-color-title);
     background-color: var(--gin-bg-layer2);
+  }
+
+  .cms-installer__dialog {
+    background-color: var(--gin-bg-layer);
     color: var(--gin-color-text);
+    box-shadow: var(--gin-shadow-l2);
+  }
+
+  .cms-installer__dialog[open]::backdrop {
+    background-color: rgba(7, 15, 34, .75);
+  }
+
+  .cms-installer__language-switcher-list a {
+    color: var(--gin-color-text);
+  }
+
+  .cms-installer__language-switcher-list a.is-selected {
+    background-color: var(--gin-bg-layer3);
+    color: var(--gin-color-title);
+  }
+
+  .cms-installer__language-switcher-list a:not(.is-selected):hover,
+  .cms-installer__language-switcher-list a:not(.is-selected):focus-visible {
+    background-color: var(--gin-bg-layer2);
+    color: var(--gin-color-primary-active);
+  }
+
+  .cms-installer__language-switcher-close.button {
+    background-color: transparent;
+    color: var(--gin-color-text-light);
+  }
+
+  .cms-installer__language-switcher-close.button:hover {
+    color: var(--gin-color-title);
   }
 
   /*
-   * Globe + chevron icons are inline SVGs with a hardcoded fill="#36393F"
-   * (dark charcoal, made for a light header background) - nearly invisible
-   * on our navy header. CSS fill overrides the presentation attribute.
+   * Das Lupen-Icon im Suchfeld ist ein Hintergrundbild mit fest eingebautem
+   * Dunkelgrau (#4F5661) - auf Navy unsichtbar. Gleiches Icon (search.svg)
+   * als Data-URI in --gin-color-text-light.
    */
-  .select-wrapper svg path {
-    fill: var(--gin-icon-color);
+  .cms-installer__language-switcher-dialog .form-element {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14'%3E%3Cpath fill='%239aa4c2' d='M13.53 12.6 10.56 9.63a5.75 5.75 0 1 0-1.06 1.07l2.97 2.97a.75.75 0 0 0 1.06-1.06ZM1.75 6.13a4.25 4.25 0 1 1 4.25 4.25 4.26 4.26 0 0 1-4.25-4.25Z'/%3E%3C/svg%3E");
+  }
+
+  /* Vollflächiges Overlay beim Herunterladen der gewählten Sprache. */
+  .cms-installer__language-loading:not([hidden]) {
+    background-color: rgba(11, 23, 48, .85);
+  }
+
+  /* Abschlussseite "Your site is almost ready" (neu in 2.2). */
+  .cms-installer__finishing-spinner {
+    border-color: var(--gin-bg-layer3);
+    border-block-start-color: var(--gin-color-primary);
   }
 
   /*
